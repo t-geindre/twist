@@ -1,0 +1,60 @@
+parameters:
+    kernel.secret: ~
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{Kernel.php}'
+
+    # TWITTER
+    HeadlessChromium\BrowserFactory:
+        arguments: ['chromium-browser']
+
+    HeadlessChromium\Browser:
+        factory: ['@HeadlessChromium\BrowserFactory', 'createBrowser']
+#        arguments: [headless: false]
+        lazy: true
+
+    App\Twitter\Browser\Client:
+        arguments:
+            $headersInterceptorScript: '%root_dir%/src/Twitter/Browser/Resource/headers-interceptor.js'
+            $requestProxyScript: '%root_dir%/src/Twitter/Browser/Resource/request-proxy.js'
+
+    # CONFIGURATION
+    Symfony\Component\Yaml\Parser: ~
+
+    Symfony\Component\Serializer\Encoder\YamlEncoder:
+        arguments:
+            $defaultContext: { yaml_inline: 10 }
+
+    Symfony\Component\Serializer\SerializerInterface: '@Symfony\Component\Serializer\Serializer'
+
+    Symfony\Component\Serializer\Serializer:
+        arguments:
+            $encoders: ['@Symfony\Component\Serializer\Encoder\YamlEncoder']
+
+    App\Configuration\Configuration:
+        arguments:
+            $defaultConfigFile: '%root_dir%/config/default.yaml'
+            $parser: '@Symfony\Component\Yaml\Parser'
+        calls:
+            - ['load']
+
+    # CONSOLE
+    Symfony\Component\Console\Input\InputInterface:
+        synthetic: true
+
+    Symfony\Component\Console\Output\OutputInterface:
+        synthetic: true
+
+    Symfony\Component\Console\Style\SymfonyStyle: ~
+
+    App\Console\Application:
+        calls:
+            - ['add', ['@App\Console\Command\TwitterCommand']]
+            - ['setDefaultCommand', [!php/const App\Console\Command\TwitterCommand::COMMAND_NAME, true]]
+        public: true

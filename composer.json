@@ -1,0 +1,16 @@
+{
+    "name": "seeker-crew/tw-contest",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "require": {
+        "symfony/dependency-injection": "^4.2",
+        "symfony/config": "^4.2",
+        "symfony/yaml": "^4.2",
+        "chrome-php/chrome": "^0.6.0",
+        "symfony/console": "^4.2",
+        "symfony/serializer": "^4.2"
+    }
+}
