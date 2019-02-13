@@ -10,6 +10,9 @@ services:
         resource: '../src/*'
         exclude: '../src/{Kernel.php}'
 
+    Psr\Container\ContainerInterface:
+        synthetic: true
+
     # TWITTER
     HeadlessChromium\BrowserFactory:
         arguments: ['chromium-browser']
@@ -23,6 +26,14 @@ services:
         arguments:
             $headersInterceptorScript: '%root_dir%/src/Twitter/Browser/Resource/headers-interceptor.js'
             $requestProxyScript: '%root_dir%/src/Twitter/Browser/Resource/request-proxy.js'
+
+    App\Twitter\Task\Task:
+        shared: false
+        public: true
+        arguments:
+            $sources: []
+            $actions: []
+            $conditions: []
 
     # CONFIGURATION
     Symfony\Component\Yaml\Parser: ~
@@ -45,16 +56,25 @@ services:
             - ['load']
 
     # CONSOLE
-    Symfony\Component\Console\Input\InputInterface:
-        synthetic: true
+    Psr\Log\LoggerInterface: '@Symfony\Component\Console\Logger\ConsoleLogger'
 
+    Symfony\Component\Console\Logger\ConsoleLogger: ~
+
+    Symfony\Component\Console\Input\ArgvInput: ~
+    Symfony\Component\Console\Input\InputInterface:
+        alias: 'Symfony\Component\Console\Input\ArgvInput'
+        public: true
+
+    Symfony\Component\Console\Output\ConsoleOutput: ~
     Symfony\Component\Console\Output\OutputInterface:
-        synthetic: true
+        alias: 'Symfony\Component\Console\Output\ConsoleOutput'
+        public: true
 
     Symfony\Component\Console\Style\SymfonyStyle: ~
 
-    App\Console\Application:
+    Symfony\Component\Console\Application:
         calls:
             - ['add', ['@App\Console\Command\TwitterCommand']]
-            - ['setDefaultCommand', [!php/const App\Console\Command\TwitterCommand::COMMAND_NAME, true]]
+            - ['add', ['@App\Console\Command\LegacyCommand']]
+            - ['setDefaultCommand', [!php/const App\Console\Command\TwitterCommand::COMMAND_NAME, false]]
         public: true

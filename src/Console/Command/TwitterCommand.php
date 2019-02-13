@@ -3,8 +3,10 @@
 namespace App\Console\Command;
 
 use App\Configuration\Configuration;
-use App\Twitter\Actions\Tweet\Reply;
-use App\Twitter\Api\Client;
+use App\Scheduler\Scheduler;
+use App\Twitter\Browser\Client;
+use App\Twitter\Task\TaskFactory;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,140 +18,58 @@ class TwitterCommand extends Command
 
     protected static $defaultName = self::COMMAND_NAME;
 
+    /** @var Configuration */
+    private $config;
+
     /** @var Client */
     private $client;
 
-    /** @var Reply */
-    private $reply;
+    /** @var TaskFactory */
+    private $taskFactory;
 
-    /** @var Configuration */
-    private $config;
+    /** @var Scheduler */
+    private $scheduler;
+
+    /** @var LoggerInterface */
+    private $logger;
 
     /** @var SymfonyStyle */
     private $io;
 
-    public function __construct(Client $client, Reply $reply, Configuration $config, SymfonyStyle $io)
-    {
+    public function __construct(
+        Configuration $config,
+        Client $client,
+        TaskFactory $taskFactory,
+        Scheduler $scheduler,
+        LoggerInterface $logger,
+        SymfonyStyle $io
+    ) {
         parent::__construct();
 
-        $this->client = $client;
-        $this->reply = $reply;
         $this->config = $config;
+        $this->client = $client;
+        $this->taskFactory = $taskFactory;
+        $this->scheduler = $scheduler;
+        $this->logger = $logger;
         $this->io = $io;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->logger->info('Setting up tasks');
         [$username, $password] = $this->getCredentials();
 
-        $this->io->comment('Login');
+        $this->logger->info('Setting up tasks');
+        foreach ($this->config->get('tasks', []) as $task) {
+            $this->scheduler->addTask(
+                $this->taskFactory->create($task)
+            );
+        }
+
+        $this->io->comment('Logging in Twitter');
         $this->client->login($username, $password);
 
-        while (true) {
-            $this->io->comment('Searching for tweets');
-            $tweets = $this->client->searchTweets([
-                'q' => 'RT follow gagner',
-                'lang' => 'fr',
-                'result_type' => 'recent',
-                'include_entities' => 'false',
-                'count' => 100,
-            ])['statuses'];
-
-            // Avoid retweeted status
-            foreach ($tweets as &$tweet) {
-                if (!empty($tweet['retweeted_status'])) {
-                    $tweet = $tweet['retweeted_status'];
-                }
-            }
-
-            // Remove replies
-            foreach ($tweets as $key => $tweet) {
-                if (!empty($tweet['in_reply_to_status_id'])) {
-                    unset($tweets[$key]);
-                }
-            }
-
-            // Avoid duplicates
-            $duplicatedTweets = $tweets;
-            $tweets = [];
-            foreach ($duplicatedTweets as $duplicatedTweet) {
-                $tweets[$duplicatedTweet['id']] = $duplicatedTweet;
-            }
-            $tweets = array_values($tweets);
-
-            // Fully load tweets contents
-            foreach ($tweets as &$tweet) {
-                // Load tweet
-                $tweet = $this->client->getStatus([
-                    'id' => $tweet['id_str'],
-                    'include_my_retweet' => 'true',
-                    'include_entities' => 'true',
-                    'tweet_mode' => 'extended'
-                ]);
-
-                // Avoid already retweeted
-                if ($tweet['retweeted'] !== false) {
-                    continue;
-                }
-
-                // Avoid too few followers
-                if ($tweet['user']['followers_count'] < 200) {
-                    continue;
-                }
-
-                // Display
-                $this->io->block(
-                    sprintf(
-                        '%s @%s - %s followers',
-                        $tweet['user']['name'],
-                        $tweet['user']['screen_name'],
-                        $tweet['user']['followers_count']
-                    ),
-                    null,
-                    'bg=green;fg=white;options=bold'
-                );
-                $this->io->block($tweet['full_text']);
-                $this->io->block(
-                    sprintf(
-                        '%s retweets - %s favorites',
-                        $tweet['retweet_count'],
-                        $tweet['favorite_count']
-                    ),
-                    null,
-                    'bg=blue;fg=white'
-                );
-
-                // Retweet
-                $this->client->retweetStatus(['id' => $tweet['id_str']]);
-
-                // Favorite
-                $this->client->createFavorite(['id' => $tweet['id_str']]);
-
-                // Reply
-                $this->reply->execute($tweet);
-
-                // Follow owner and mentions
-                $this->client->createFriendship(['user_id' => $tweet['user']['id_str']]);
-                foreach ($tweet['entities']['user_mentions'] as $mention) {
-                    $this->client->createFriendship(['user_id' => $mention['id_str']]);
-                }
-
-                // Update tweet
-                $tweet['retweeted'] = true;
-            }
-
-
-            $pauseDuration = 600;
-            $this->io->comment(sprintf('Pause before next search (%d seconds)', $pauseDuration));
-            $progress = $this->io->createProgressBar();
-            $progress->setMaxSteps($pauseDuration);
-            $progress->setMessage('Pause before next search');
-            for ($i = 0; $i < $pauseDuration; $i++) {
-                sleep(1);
-                $progress->advance();
-            }
-            $progress->clear();
-        }
+        $this->scheduler->run();
     }
 
     protected function getCredentials(): array

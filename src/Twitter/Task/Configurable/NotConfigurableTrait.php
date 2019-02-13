@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Twitter\Configurable;
+namespace App\Twitter\Task\Configurable;
 
 trait NotConfigurableTrait
 {

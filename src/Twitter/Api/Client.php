@@ -16,11 +16,6 @@ class Client
         $this->browserClient = $browserClient;
     }
 
-    public function login(string $username, string $password = null): void
-    {
-        $this->browserClient->login($username, $password);
-    }
-
     public function request(string $method, string $url, array $data = []): ?array
     {
         return $this->browserClient->request([

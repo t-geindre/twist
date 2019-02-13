@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Twitter\Actions\Tweet;
+namespace App\Twitter\Task\Actions\Tweet;
 
-use App\Twitter\Actions\ActionInterface;
 use App\Twitter\Api\Client;
 use App\Twitter\Configurable\NotConfigurableTrait;
+use App\Twitter\Task\Actions\ActionInterface;
 
 class Favorite implements ActionInterface
 {

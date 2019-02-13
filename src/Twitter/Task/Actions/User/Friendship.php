@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Twitter\Actions\User;
+namespace App\Twitter\Task\Actions\User;
 
-use App\Twitter\Actions\ActionInterface;
+use App\Twitter\Task\Actions\ActionInterface;
 use App\Twitter\Api\Client;
 
 class Friendship implements ActionInterface

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Twitter\Actions\Tweet;
+namespace App\Twitter\Task\Actions\Tweet;
 
-use App\Twitter\Actions\ActionInterface;
-use App\Twitter\Actions\User\Friendship;
+use App\Twitter\Task\Actions\ActionInterface;
+use App\Twitter\Task\Actions\User\Friendship;
 
-class FrienshipMentioned implements ActionInterface
+class FriendshipOwner implements ActionInterface
 {
     /** @var Friendship */
     private $follow;
@@ -22,9 +22,7 @@ class FrienshipMentioned implements ActionInterface
 
     public function execute(array $tweet): array
     {
-        foreach ($tweet['entities']['user_mentions'] ?? [] as &$user) {
-            $user = $this->follow->execute($user);
-        }
+        $tweet['user'] = $this->follow->execute($tweet['user']);
 
         return $tweet;
     }

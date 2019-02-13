@@ -2,10 +2,20 @@
 
 namespace App\Scheduler;
 
+use Psr\Log\LoggerInterface;
+
 class Scheduler
 {
     /** @var array */
     private $tasks = [];
+
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
 
     public function addTask(TaskInterface $task)
     {
@@ -27,6 +37,8 @@ class Scheduler
     {
         $duration = min(array_column($this->tasks, 'pause'));
 
+        $this->logger->info(sprintf('%d second(s) pause before executing next task', $duration));
+
         sleep($duration);
 
         foreach ($this->tasks as &$task) {
@@ -36,6 +48,10 @@ class Scheduler
 
     protected function runTasks()
     {
+        if (count($this->tasks) === 0) {
+            throw new \RuntimeException('There is no task to run');
+        }
+
         foreach ($this->tasks as &$task) {
             if ($task['pause'] === 0) {
                 $task['task']->run();

@@ -12,16 +12,12 @@ function twitterContestGetRequestResult(uid) {
 
 function twitterContestRequest(uid, settings)
 {
-    console.log(settings);
-
     twitterContestRequestStates[uid] = {
         status: 'pending'
     };
 
     settings['success'] = (function(uid) {
         return function (data, status) {
-            console.log('REQUEST DONE');
-            console.log(uid);
             twitterContestRequestStates[uid] = {
                 status,
                 data
@@ -30,6 +26,4 @@ function twitterContestRequest(uid, settings)
     })(uid);
 
     jQuery.ajax(settings);
-
-    console.log('SENT');
 }

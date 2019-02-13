@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Twitter\Actions\Tweet;
+namespace App\Twitter\Task\Actions\Tweet;
 
-use App\Twitter\Actions\ActionInterface;
+use App\Twitter\Task\Actions\ActionInterface;
 use App\Twitter\Api\Client;
-use App\Twitter\Configurable\NotConfigurableTrait;
+use App\Twitter\Task\Configurable\NotConfigurableTrait;
 
 class Reply implements ActionInterface
 {
@@ -61,7 +61,7 @@ class Reply implements ActionInterface
     ];
 
     const HASHTAG_FORBIDDEN_WORDS = [
-        'concours', 'rt', 'follow', 'cadeau', 'lot', 'giveway', 'gagner', 'jeu'
+        'concours', 'rt', 'follow', 'cadeau', 'lot', 'giveaway', 'gagner', 'jeu', 'like',
     ];
 
     /** @var Client */
@@ -106,7 +106,7 @@ class Reply implements ActionInterface
                 array_column($tweet['entities']['hashtags'] ?? [], 'text'),
                 function(string $tag) {
                     foreach (self::HASHTAG_FORBIDDEN_WORDS as $word) {
-                        if (strpos(strtolower($tag), $word) !== false) {
+                        if (strpos(strtolower($tag), strtolower($word)) !== false) {
                             return false;
                         }
                     }
@@ -115,8 +115,8 @@ class Reply implements ActionInterface
             )
         );
 
-        if (count($hashtags)) {
-            return ($withStartingSpace ? ' ' : '').'#'.implode(' #', $hashtags);
+        if ($count = count($hashtags)) {
+            return ($withStartingSpace ? ' ' : '').'#'.array_values($hashtags)[mt_rand(0, $count - 1)];
         }
 
         return '';

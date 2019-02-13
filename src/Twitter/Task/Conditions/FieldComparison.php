@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Twitter\Conditions;
+namespace App\Twitter\Task\Conditions;
 
 class FieldComparison implements ConditionInterface
 {

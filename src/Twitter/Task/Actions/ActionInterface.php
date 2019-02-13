@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Twitter\Actions;
+namespace App\Twitter\Task\Actions;
 
 use App\Twitter\Configurable\ConfigurableInterface;
 
