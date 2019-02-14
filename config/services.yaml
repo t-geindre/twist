@@ -31,9 +31,17 @@ services:
         shared: false
         public: true
         arguments:
-            $sources: []
-            $actions: []
-            $conditions: []
+            $sources:
+                search: '@App\Twitter\Task\Source\Search'
+            $actions:
+                favorite: '@App\Twitter\Task\Actions\Tweet\Favorite'
+                friendship_mentioned: '@App\Twitter\Task\Actions\Tweet\FriendshipMentioned'
+                friendship_owner: '@App\Twitter\Task\Actions\Tweet\FriendshipOwner'
+                reply: '@App\Twitter\Task\Actions\Tweet\Reply'
+                retweet: '@App\Twitter\Task\Actions\Tweet\Retweet'
+            $conditions:
+                field_comparison: '@App\Twitter\Task\Conditions\FieldComparison'
+                field_match: '@App\Twitter\Task\Conditions\FieldMatch'
 
     # CONFIGURATION
     Symfony\Component\Yaml\Parser: ~
@@ -56,16 +64,18 @@ services:
             - ['load']
 
     # CONSOLE
-    Psr\Log\LoggerInterface: '@Symfony\Component\Console\Logger\ConsoleLogger'
+    Psr\Log\LoggerInterface: '@App\Console\Logger\ConsoleLogger'
 
-    Symfony\Component\Console\Logger\ConsoleLogger: ~
+    App\Console\Logger\ConsoleLogger: ~
 
     Symfony\Component\Console\Input\ArgvInput: ~
     Symfony\Component\Console\Input\InputInterface:
         alias: 'Symfony\Component\Console\Input\ArgvInput'
         public: true
 
-    Symfony\Component\Console\Output\ConsoleOutput: ~
+    Symfony\Component\Console\Output\ConsoleOutput:
+        arguments:
+            $verbosity: !php/const Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERY_VERBOSE
     Symfony\Component\Console\Output\OutputInterface:
         alias: 'Symfony\Component\Console\Output\ConsoleOutput'
         public: true

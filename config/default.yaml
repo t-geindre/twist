@@ -6,14 +6,13 @@ tasks:
                 q: 'RT follow gagner'
                 lang: 'fr'
                 result_type: 'recent'
-                include_entities: false
                 count: 100
 
         filters:
             -
                 type: 'field_comparator'
                 config:
-                    field: 'retweet'
+                    field: 'retweeted'
                     operator: 'eq'
                     value: true
 
@@ -22,12 +21,26 @@ tasks:
             - { type: 'favorite' }
             - { type: 'friendship_owner', config: { follow: true, ttl: '30 DAYS' } }
             - { type: 'friendship_mentions', config: { follow: true, ttl: '30 DAYS' }  }
-            - { type: 'reply' }
+            -
+                type: 'reply'
+                config:
+                    parts:
+                        - Merci !
+                    mentions:
+                        conditions:
+                            -
+                                type: field_match
+                                config:
+                                    pattern: /(mention|ami|tag)/
+
+
 
         pause: 600
 
-    followers_cleaning:
-        source:
-            type: clear_followers
-        pause: 3600
-        immediate_start: false # true by default
+#    following_cleaning:
+#        source:
+#            type: following_expired
+#        actions:
+#            - { type: unfriendship }
+#        pause: 3600
+#        immediate_start: false # true by default

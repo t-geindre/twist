@@ -2,9 +2,9 @@
 
 namespace App\Twitter\Task\Actions\Tweet;
 
-use App\Twitter\Task\Actions\ActionInterface;
 use App\Twitter\Api\Client;
-use App\Twitter\Configurable\NotConfigurableTrait;
+use App\Twitter\Task\Actions\ActionInterface;
+use App\Twitter\Task\Configurable\NotConfigurableTrait;
 
 class Retweet implements ActionInterface
 {

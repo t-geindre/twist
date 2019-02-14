@@ -3,7 +3,7 @@
 namespace App\Twitter\Task\Actions\Tweet;
 
 use App\Twitter\Api\Client;
-use App\Twitter\Configurable\NotConfigurableTrait;
+use App\Twitter\Task\Configurable\NotConfigurableTrait;
 use App\Twitter\Task\Actions\ActionInterface;
 
 class Favorite implements ActionInterface

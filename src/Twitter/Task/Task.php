@@ -3,27 +3,35 @@
 namespace App\Twitter\Task;
 
 use App\Scheduler\TaskInterface;
+use App\Twitter\Task\Actions\ActionInterface;
+use App\Twitter\Task\Conditions\ConditionInterface;
 use App\Twitter\Task\Configurable\ConfigurableInterface;
+use App\Twitter\Task\Source\SourceInterface;
+use Psr\Log\LoggerInterface;
 
 class Task implements TaskInterface, ConfigurableInterface
 {
     /** @var array */
     private $config;
 
-    /** @var array */
+    /** @var SourceInterface[] */
     private $sources;
 
-    /** @var array */
+    /** @var ConditionInterface[] */
     private $conditions;
 
-    /** @var array */
+    /** @var ActionInterface[] */
     private $actions;
 
-    public function __construct(array $sources, array $conditions, array $actions)
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(array $sources, array $conditions, array $actions, LoggerInterface $logger)
     {
         $this->sources = $sources;
         $this->conditions = $conditions;
         $this->actions = $actions;
+        $this->logger = $logger;
     }
 
     public function startImmediately(): bool
@@ -43,7 +51,15 @@ class Task implements TaskInterface, ConfigurableInterface
     public function run(): void
     {
         $this->assertIsConfigured();
-        // todo
+
+        $this->logger->info(sprintf('Executing "%s" task', $this->config['name']));
+
+        $source = $this->sources[$this->config['source']['type']];
+        $source->configure($this->config['source']['config']);
+
+        $data = $source->execute();
+
+        var_dump($data);
     }
 
     public function configure(?array $config): void
@@ -54,7 +70,7 @@ class Task implements TaskInterface, ConfigurableInterface
     protected function assertIsConfigured(): void
     {
         if (null === $this->config) {
-            throw new \RuntimeException('Task must configured before beeing executed');
+            throw new \RuntimeException('Task must be configured before beeing executed');
         }
     }
 }

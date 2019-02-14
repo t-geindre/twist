@@ -56,17 +56,19 @@ class TwitterCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->logger->info('Setting up tasks');
         [$username, $password] = $this->getCredentials();
 
         $this->logger->info('Setting up tasks');
-        foreach ($this->config->get('tasks', []) as $task) {
+        foreach ($this->config->get('tasks', []) as $taskName => $taskConfig) {
             $this->scheduler->addTask(
-                $this->taskFactory->create($task)
+                $this->taskFactory->create(array_merge(
+                    ['name' => $taskName],
+                    $taskConfig
+                ))
             );
         }
 
-        $this->io->comment('Logging in Twitter');
+        $this->logger->info('Logging in Twitter');
         $this->client->login($username, $password);
 
         $this->scheduler->run();
