@@ -23,7 +23,7 @@ class Friendship implements ActionInterface
         $this->follow = (bool) ($config['follow'] ?? false);
     }
 
-    public function execute(array $user): array
+    public function execute(array $user): ?array
     {
         $this->client->createFriendship(array_filter([
             'user_id' => $user['id_str'],

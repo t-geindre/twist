@@ -3,6 +3,7 @@
 namespace App\Twitter\Task\Source;
 
 use App\Twitter\Api\Client;
+use Psr\Log\LoggerInterface;
 
 class Search implements SourceInterface
 {

@@ -20,7 +20,7 @@ class FriendshipMentioned implements ActionInterface
         $this->follow->configure($config);
     }
 
-    public function execute(array $tweet): array
+    public function execute(array $tweet): ?array
     {
         foreach ($tweet['entities']['user_mentions'] ?? [] as &$user) {
             $user = $this->follow->execute($user);

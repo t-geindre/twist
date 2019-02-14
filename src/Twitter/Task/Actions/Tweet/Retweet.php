@@ -18,7 +18,7 @@ class Retweet implements ActionInterface
         $this->client = $client;
     }
 
-    public function execute(array $tweet): array
+    public function execute(array $tweet): ?array
     {
         $this->client->retweetStatus(['id' => $tweet['id_str']]);
 

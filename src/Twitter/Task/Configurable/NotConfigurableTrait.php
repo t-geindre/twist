@@ -6,7 +6,7 @@ trait NotConfigurableTrait
 {
     public function configure(?array $config): void
     {
-        if (null !== $config) {
+        if (!empty($config)) {
             throw new \InvalidArgumentException('This is not configurable');
         }
     }

@@ -54,17 +54,86 @@ class Task implements TaskInterface, ConfigurableInterface
 
         $this->logger->info(sprintf('Executing "%s" task', $this->config['name']));
 
-        $source = $this->sources[$this->config['source']['type']];
-        $source->configure($this->config['source']['config']);
+        $data = [];
 
-        $data = $source->execute();
-
-        var_dump($data);
+        foreach ($this->config['steps'] as $step) {
+            switch($step['type']) {
+                case 'source':
+                    $data = $this->executeSource($step);
+                    break;
+                case 'filter':
+                    $data = $this->executeFilter($step, $data);
+                    break;
+                case 'action':
+                    $data = $this->executeAction($step, $data);
+                    break;
+                default:
+                    throw new \InvalidArgumentException(sprintf('Unknown task type "%s"', $step['type']));
+            }
+        }
     }
 
     public function configure(?array $config): void
     {
         $this->config = $config;
+    }
+
+    protected function executeSource(array $config): array
+    {
+        if (!array_key_exists($config['which'], $this->sources)) {
+            throw new \InvalidArgumentException(sprintf('Unknown source type "%s"', $config['which']));
+        }
+
+        $this->logger->info(sprintf('Executing source "%s"', $config['which']));
+
+        $source = $this->sources[$config['which']];
+        $source->configure($config['config'] ?? []);
+
+        return $source->execute();
+    }
+
+    protected function executeFilter(array $config, array $data)
+    {
+        if (!array_key_exists($config['which'], $this->conditions)) {
+            throw new \InvalidArgumentException(sprintf('Unknown filter type "%s"', $config['which']));
+        }
+
+        $this->logger->info(sprintf('Applying filter "%s"', $config['which']));
+
+        $condition = $this->conditions[$config['which']];
+        $condition->configure($config['config'] ?? []);
+
+        return array_filter(
+            $data,
+            function (array $item) use ($condition) {
+                return $condition->satisfy($item);
+            }
+        );
+    }
+
+    protected function executeAction(array $config, array $data): array
+    {
+        if (!array_key_exists($config['which'], $this->actions)) {
+            throw new \InvalidArgumentException(sprintf('Unknown action type "%s"', $config['which']));
+        }
+
+        $this->logger->info(sprintf('Executing action "%s"', $config['which']));
+
+        $action = $this->actions[$config['which']];
+        $action->configure($config['config'] ?? []);
+
+        $localData = $data;
+        if (!empty($config['conditions'])) {
+            foreach ($config['conditions'] as $condition) {
+                $localData = $this->executeFilter($condition, $data);
+            }
+        }
+
+        foreach ($localData as $key => $item) {
+            $data[$key] = $action->execute($item);
+        }
+
+        return $data;
     }
 
     protected function assertIsConfigured(): void

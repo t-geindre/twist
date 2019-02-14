@@ -17,6 +17,10 @@ class FieldComparison implements ConditionInterface
 
     public function satisfy(array $subject): bool
     {
+        var_dump(            $this->config['operator'],
+            $subject[$this->config['field']],
+            $this->config['value']);
+
         return $this->compare(
             $this->config['operator'],
             $subject[$this->config['field']],

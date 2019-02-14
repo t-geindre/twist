@@ -20,7 +20,7 @@ class FriendshipOwner implements ActionInterface
         $this->follow->configure($config);
     }
 
-    public function execute(array $tweet): array
+    public function execute(array $tweet): ?array
     {
         $tweet['user'] = $this->follow->execute($tweet['user']);
 

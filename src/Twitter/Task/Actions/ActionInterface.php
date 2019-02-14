@@ -2,9 +2,9 @@
 
 namespace App\Twitter\Task\Actions;
 
-use App\Twitter\Configurable\ConfigurableInterface;
+use App\Twitter\Task\Configurable\ConfigurableInterface;
 
 interface ActionInterface extends ConfigurableInterface
 {
-    public function execute(array $subject): array;
+    public function execute(array $subject): ?array;
 }

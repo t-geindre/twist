@@ -72,7 +72,7 @@ class Reply implements ActionInterface
         $this->client = $client;
     }
 
-    public function execute(array $tweet): array
+    public function execute(array $tweet): ?array
     {
         $this->client->updateStatus([
             'in_reply_to_status_id' => $tweet['id_str'],

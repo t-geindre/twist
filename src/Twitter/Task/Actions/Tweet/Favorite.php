@@ -18,7 +18,7 @@ class Favorite implements ActionInterface
         $this->client = $client;
     }
 
-    public function execute(array $tweet): array
+    public function execute(array $tweet): ?array
     {
         $this->client->createFavorite(['id' => $tweet['id_str']]);
 

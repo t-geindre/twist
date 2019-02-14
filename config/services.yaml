@@ -39,9 +39,12 @@ services:
                 friendship_owner: '@App\Twitter\Task\Actions\Tweet\FriendshipOwner'
                 reply: '@App\Twitter\Task\Actions\Tweet\Reply'
                 retweet: '@App\Twitter\Task\Actions\Tweet\Retweet'
+                retrieve_original_tweet: '@App\Twitter\Task\Actions\Tweet\RetrieveOriginalTweet'
+                display: '@App\Twitter\Task\Actions\Tweet\Display'
             $conditions:
                 field_comparison: '@App\Twitter\Task\Conditions\FieldComparison'
                 field_match: '@App\Twitter\Task\Conditions\FieldMatch'
+                is_unique: '@App\Twitter\Task\Conditions\IsUnique'
 
     # CONFIGURATION
     Symfony\Component\Yaml\Parser: ~

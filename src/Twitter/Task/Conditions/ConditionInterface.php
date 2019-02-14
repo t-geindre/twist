@@ -2,7 +2,7 @@
 
 namespace App\Twitter\Task\Conditions;
 
-use App\Twitter\Configurable\ConfigurableInterface;
+use App\Twitter\Task\Configurable\ConfigurableInterface;
 
 interface ConditionInterface extends ConfigurableInterface
 {

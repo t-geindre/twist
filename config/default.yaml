@@ -1,46 +1,50 @@
 tasks:
-    contest:
-        source:
-            type: 'search'
-            config:
-                q: 'RT follow gagner'
-                lang: 'fr'
-                result_type: 'recent'
-                count: 100
-
-        filters:
-            -
-                type: 'field_comparator'
-                config:
-                    field: 'retweeted'
-                    operator: 'eq'
-                    value: true
-
-        actions:
-            - { type: 'retweet' }
-            - { type: 'favorite' }
-            - { type: 'friendship_owner', config: { follow: true, ttl: '30 DAYS' } }
-            - { type: 'friendship_mentions', config: { follow: true, ttl: '30 DAYS' }  }
-            -
-                type: 'reply'
-                config:
-                    parts:
-                        - Merci !
-                    mentions:
-                        conditions:
-                            -
-                                type: field_match
-                                config:
-                                    pattern: /(mention|ami|tag)/
-
-
-
+    enter_contest:
         pause: 600
+        start_immediatly: false
+        steps:
+            search:
+                type: 'source'
+                which: 'search'
+                config: { q: 'RT follow gagner', lang: 'fr', result_type: 'recent', count: 100, tweet_mode: 'extended', include_entities: true }
+            avoid_rt:
+                type: 'action'
+                which: 'retrieve_original_tweet'
+            remove_duplicates:
+                type: 'filter'
+                which: 'is_unique'
+            remove_already_rt:
+                type: 'filter'
+                which: 'field_comparison'
+                config: { field: 'retweeted', operator: 'eq', value: false }
+            remove_too_old:
+                type: 'filter'
+                which: 'field_comparison'
+                config: { field: 'created_at', operator: 'gte', value: '-10 DAYS' }
+            remove_not_enough_retweeted:
+                type: 'filter'
+                which: 'field_comparison'
+                config: { field: 'retweet_count', operator: 'gte', value: 200 }
+            retweet:
+                type: 'action'
+                which: 'retweet'
+            favorite:
+                type: 'action'
+                which: 'favorite'
+                conditions:
+                    - { which: 'field_match', pattern: '/(fav|like)/' }
+            friendship_owner:
+                type: 'action'
+                which: 'friendship_owner'
+                config: { follow: true, ttl: '30 DAYS' }
+            friendship_mentions:
+                type: 'action'
+                which: 'friendship_mentions'
+                config: { follow: true, ttl: '30 DAYS' }
+            reply:
+                type: 'action'
+                which: 'reply'
+            display:
+                type: 'action'
+                which: 'display'
 
-#    following_cleaning:
-#        source:
-#            type: following_expired
-#        actions:
-#            - { type: unfriendship }
-#        pause: 3600
-#        immediate_start: false # true by default
