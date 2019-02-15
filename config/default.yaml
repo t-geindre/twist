@@ -1,7 +1,7 @@
 tasks:
     enter_contest:
         pause: 600
-        start_immediatly: false
+        immediate_start: false
         steps:
             search:
                 type: 'source'
