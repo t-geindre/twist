@@ -20,7 +20,6 @@ services:
     HeadlessChromium\Browser:
         factory: ['@HeadlessChromium\BrowserFactory', 'createBrowser']
 #        arguments: [headless: false]
-        lazy: true
 
     App\Twitter\Browser\Client:
         arguments:
@@ -41,6 +40,7 @@ services:
                 retweet: '@App\Twitter\Task\Actions\Tweet\Retweet'
                 retrieve_original_tweet: '@App\Twitter\Task\Actions\Tweet\RetrieveOriginalTweet'
                 display: '@App\Twitter\Task\Actions\Tweet\Display'
+                reload: '@App\Twitter\Task\Actions\Tweet\Reload'
             $conditions:
                 field_comparison: '@App\Twitter\Task\Conditions\FieldComparison'
                 field_match: '@App\Twitter\Task\Conditions\FieldMatch'

@@ -39,7 +39,7 @@ class Client
         $this->page->waitForReload();
 
         if (strpos($this->page->getCurrentUrl(), self::LOGIN_URL) === false) {
-            $this->fetchRequestHeaders();        var_dump($this->requestHeaders);
+            $this->fetchRequestHeaders();
 
             return $this->loggedIn = true;
         }

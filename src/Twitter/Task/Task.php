@@ -56,7 +56,13 @@ class Task implements TaskInterface, ConfigurableInterface
 
         $data = [];
 
-        foreach ($this->config['steps'] as $step) {
+        foreach ($this->config['steps'] as $name => $step) {
+            if (is_numeric($name)) {
+                $name = $step['which'];
+            }
+
+            $this->logger->info(sprintf('Executing step "%s"', $name));
+
             switch($step['type']) {
                 case 'source':
                     $data = $this->executeSource($step);
@@ -84,8 +90,6 @@ class Task implements TaskInterface, ConfigurableInterface
             throw new \InvalidArgumentException(sprintf('Unknown source type "%s"', $config['which']));
         }
 
-        $this->logger->info(sprintf('Executing source "%s"', $config['which']));
-
         $source = $this->sources[$config['which']];
         $source->configure($config['config'] ?? []);
 
@@ -97,8 +101,6 @@ class Task implements TaskInterface, ConfigurableInterface
         if (!array_key_exists($config['which'], $this->conditions)) {
             throw new \InvalidArgumentException(sprintf('Unknown filter type "%s"', $config['which']));
         }
-
-        $this->logger->info(sprintf('Applying filter "%s"', $config['which']));
 
         $condition = $this->conditions[$config['which']];
         $condition->configure($config['config'] ?? []);
@@ -116,8 +118,6 @@ class Task implements TaskInterface, ConfigurableInterface
         if (!array_key_exists($config['which'], $this->actions)) {
             throw new \InvalidArgumentException(sprintf('Unknown action type "%s"', $config['which']));
         }
-
-        $this->logger->info(sprintf('Executing action "%s"', $config['which']));
 
         $action = $this->actions[$config['which']];
         $action->configure($config['config'] ?? []);

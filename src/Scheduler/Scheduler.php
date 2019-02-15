@@ -3,6 +3,7 @@
 namespace App\Scheduler;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class Scheduler
 {
@@ -12,9 +13,13 @@ class Scheduler
     /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    /** @var SymfonyStyle */
+    private $io;
+
+    public function __construct(LoggerInterface $logger, SymfonyStyle $io)
     {
         $this->logger = $logger;
+        $this->io = $io;
     }
 
     public function addTask(TaskInterface $task)
@@ -39,7 +44,14 @@ class Scheduler
 
         $this->logger->info(sprintf('%d second(s) pause before executing next task', $duration));
 
-        sleep($duration);
+        $progress = $this->io->createProgressBar();
+        $progress->setMaxSteps($duration);
+        $progress->setMessage('Pause before next search');
+        for ($i = 0; $i < $duration; $i++) {
+            sleep(1);
+            $progress->advance();
+        }
+        $progress->clear();
 
         foreach ($this->tasks as &$task) {
             $task['pause'] -= $duration;

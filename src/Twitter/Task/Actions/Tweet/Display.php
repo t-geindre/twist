@@ -20,7 +20,6 @@ class Display implements ActionInterface
 
     public function execute(array $tweet): ?array
     {
-        var_dump($tweet);
         $this->io->block(
             sprintf(
                 '%s @%s - %s followers',
@@ -31,7 +30,7 @@ class Display implements ActionInterface
             null,
             'bg=green;fg=white;options=bold'
         );
-        $this->io->block($tweet['full_text']);
+        $this->io->block($tweet['full_text'] ?? $tweet['text']);
         $this->io->block(
             sprintf(
                 '%s retweets - %s favorites',

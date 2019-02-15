@@ -6,5 +6,5 @@ use App\Twitter\Task\Configurable\ConfigurableInterface;
 
 interface ActionInterface extends ConfigurableInterface
 {
-    public function execute(array $subject): ?array;
+    public function execute(array $tweet): ?array;
 }
