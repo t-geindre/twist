@@ -50,6 +50,14 @@ class Client
     }
 
     /**
+     * See https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-mentions_timeline.html
+     */
+    public function getMentionsTimeline(array $data)
+    {
+        return $this->request('GET', 'statuses/mentions_timeline.json', $data);
+    }
+
+    /**
      * See https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-statuses-retweet-id
      */
     public function retweetStatus(array $data): ?array
