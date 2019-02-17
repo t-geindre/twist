@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Twitter\Task\Actions\Tweet;
+namespace App\Twitter\Task\Step\Action\Tweet;
 
 use App\Twitter\Api\Client;
-use App\Twitter\Task\Actions\ActionInterface;
-use App\Twitter\Task\Configurable\NotConfigurableTrait;
+use App\Twitter\Task\Step\Action\ActionInterface;
 
 class Retweet implements ActionInterface
 {
-    use NotConfigurableTrait;
-
     /** @var Client */
     private $client;
 

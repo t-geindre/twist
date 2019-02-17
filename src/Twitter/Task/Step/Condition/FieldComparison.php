@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Twitter\Task\Conditions;
+namespace App\Twitter\Task\Step\Condition;
 
-class FieldComparison implements ConditionInterface
+use App\Twitter\Task\ConfigurableInterface;
+
+class FieldComparison implements ConditionInterface, ConfigurableInterface
 {
     /** @var array */
     private $config = [];
@@ -10,7 +12,7 @@ class FieldComparison implements ConditionInterface
     /** @var string */
     protected $comparisonField;
 
-    public function configure(?array $config): void
+    public function configure(array $config): void
     {
         $this->config = $config;
     }

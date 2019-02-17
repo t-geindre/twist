@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Twitter\Task\Actions\User;
+namespace App\Twitter\Task\Step\Action\User;
 
-use App\Twitter\Task\Actions\ActionInterface;
+use App\Twitter\Task\Step\Action\ActionInterface;
 use App\Twitter\Api\Client;
+use App\Twitter\Task\ConfigurableInterface;
 
-class Friendship implements ActionInterface
+class Friendship implements ActionInterface, ConfigurableInterface
 {
     /** @var Client */
     private $client;
@@ -18,7 +19,7 @@ class Friendship implements ActionInterface
         $this->client = $client;
     }
 
-    public function configure(?array $config): void
+    public function configure(array $config): void
     {
         $this->follow = (bool) ($config['follow'] ?? false);
     }

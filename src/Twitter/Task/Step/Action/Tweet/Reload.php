@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Twitter\Task\Actions\Tweet;
+namespace App\Twitter\Task\Step\Action\Tweet;
 
 use App\Twitter\Api\Client;
-use App\Twitter\Task\Actions\ActionInterface;
+use App\Twitter\Task\Step\Action\ActionInterface;
+use App\Twitter\Task\ConfigurableInterface;
 
-class Reload implements ActionInterface
+class Reload implements ActionInterface, ConfigurableInterface
 {
     /** @var Client */
     private $client;
@@ -26,7 +27,7 @@ class Reload implements ActionInterface
         ));
     }
 
-    public function configure(?array $config): void
+    public function configure(array $config): void
     {
         $this->config = $config;
     }

@@ -13,13 +13,13 @@ class Scheduler
     /** @var LoggerInterface */
     private $logger;
 
-    /** @var SymfonyStyle */
-    private $io;
+    /** @var TaskFollowerInterface */
+    private $taskFollower;
 
-    public function __construct(LoggerInterface $logger, SymfonyStyle $io)
+    public function __construct(LoggerInterface $logger, TaskFollowerInterface $taskFollower)
     {
         $this->logger = $logger;
-        $this->io = $io;
+        $this->taskFollower = $taskFollower;
     }
 
     public function addTask(TaskInterface $task)
@@ -42,16 +42,17 @@ class Scheduler
     {
         $duration = min(array_column($this->tasks, 'pause'));
 
-        $this->logger->info(sprintf('%d second(s) pause before executing next task', $duration));
+        $this->taskFollower->start(
+            sprintf('%d second(s) pause before executing next task', $duration),
+            $duration
+        );
 
-        $progress = $this->io->createProgressBar();
-        $progress->setMaxSteps($duration);
-        $progress->setMessage('Pause before next search');
         for ($i = 0; $i < $duration; $i++) {
             sleep(1);
-            $progress->advance();
+            $this->taskFollower->advance();
         }
-        $progress->clear();
+
+        $this->taskFollower->ends();
 
         foreach ($this->tasks as &$task) {
             $task['pause'] -= $duration;
@@ -67,7 +68,7 @@ class Scheduler
         foreach ($this->tasks as &$task) {
             if ($task['pause'] === 0) {
                 $task['task']->run();
-                $task['pause']= $task['task']->getPauseDuration();
+                $task['pause'] = $task['task']->getPauseDuration();
             }
         }
     }

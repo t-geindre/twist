@@ -1,15 +1,11 @@
 <?php
 
-namespace App\Twitter\Task\Conditions;
+namespace App\Twitter\Task\Step\Condition;
 
-use App\Twitter\Task\Configurable\NotConfigurableTrait;
+use App\Twitter\Task\Step\ResetableInterface;
 
-class IsUnique implements ConditionInterface
+class IsUnique implements ConditionInterface, ResetableInterface
 {
-    Use NotConfigurableTrait {
-        configure as parentConfigure;
-    }
-
     /** @var array */
     private $usedIds = [];
 
@@ -23,9 +19,8 @@ class IsUnique implements ConditionInterface
         return false;
     }
 
-    public function configure(?array $config): void
+    public function reset(): void
     {
         $this->usedIds = [];
-        $this->parentConfigure($config);
     }
 }

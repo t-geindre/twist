@@ -1,62 +1,47 @@
 tasks:
-    enter_contest:
+    search_and_enter_contest:
         pause: 600
-        immediate_start: false
+        immediate_start: true
+        source:
+            type: 'Search'
+            config: { q: 'RT follow gagner', lang: 'fr', result_type: 'recent', count: 100, tweet_mode: 'extended', include_entities: true }
         steps:
-            search:
-                type: 'source'
-                which: 'search'
-                config: { q: 'RT follow gagner', lang: 'fr', result_type: 'recent', count: 100, tweet_mode: 'extended', include_entities: true }
             avoid_rt:
-                type: 'action'
-                which: 'retrieve_original_tweet'
+                type: 'Action\Tweet\RetrieveOriginalTweet'
             remove_duplicates:
-                type: 'filter'
-                which: 'is_unique'
+                type: 'Condition\IsUnique'
             # Since the search API returns tweets with retweeted & favorited field always false
             # we need to reload each tweet to get the real values
             reload:
-                type: 'action'
-                which: 'reload'
+                type: 'Action\Tweet\Reload'
                 config: { include_my_retweet: true, include_entities: true, tweet_mode: 'extended' }
             remove_already_rt:
-                type: 'filter'
-                which: 'field_comparison'
+                type: 'Condition\FieldComparison'
                 config: { field: 'retweeted', operator: 'eq', value: false }
             remove_replies:
-                type: 'filter'
-                which: 'field_comparison'
+                type: 'Condition\FieldComparison'
                 config: { field: 'in_reply_to_status_id', operator: 'eq', value: ~ }
             remove_too_old:
-                type: 'filter'
-                which: 'field_comparison'
+                type: 'Condition\FieldComparison'
                 config: { field: 'created_at', operator: 'gte', value: '-10 DAYS' }
             remove_not_enough_retweeted:
-                type: 'filter'
-                which: 'field_comparison'
-                config: { field: 'retweet_count', operator: 'gte', value: 200 }
+                type: 'Condition\FieldComparison'
+                config: { field: 'retweet_count', operator: 'gte', value: 50 }
             retweet:
-                type: 'action'
-                which: 'retweet'
+                type: 'Action\Tweet\Retweet'
             favorite:
-                type: 'action'
-                which: 'favorite'
+                type: 'Action\Tweet\Favorite'
                 conditions:
                     -
-                        which: 'field_match'
+                        type: 'Condition\FieldMatch'
                         config: { field: 'full_text', pattern: '/(fav|like)/' }
             friendship_owner:
-                type: 'action'
-                which: 'friendship_owner'
+                type: 'Action\Tweet\FriendshipOwner'
                 config: { follow: true, ttl: '30 DAYS' }
             friendship_mentioned:
-                type: 'action'
-                which: 'friendship_mentioned'
+                type: 'Action\Tweet\FriendshipMentioned'
                 config: { follow: true, ttl: '30 DAYS' }
             reply:
-                type: 'action'
-                which: 'reply'
+                type: 'Action\Tweet\Reply'
             display:
-                type: 'action'
-                which: 'display'
-
+                type: 'Action\Tweet\Display'

@@ -1,25 +1,29 @@
 <?php
 
-namespace App\Twitter\Task\Actions\Tweet;
+namespace App\Twitter\Task\Step\Action\Tweet;
 
-use App\Twitter\Task\Actions\ActionInterface;
-use App\Twitter\Task\Configurable\NotConfigurableTrait;
+use App\Console\Task\TaskFollower;
+use App\Twitter\Task\Step\Action\ActionInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class Display implements ActionInterface
 {
-    use NotConfigurableTrait;
-
     /** @var SymfonyStyle */
     private $io;
 
-    public function __construct(SymfonyStyle $io)
+    /** @var TaskFollower */
+    private $taskFollower;
+
+    public function __construct(SymfonyStyle $io, TaskFollower $taskFollower)
     {
         $this->io = $io;
+        $this->taskFollower = $taskFollower;
     }
 
     public function execute(array $tweet): ?array
     {
+        $this->taskFollower->hide();
+
         $this->io->block(
             sprintf(
                 '%s @%s - %s followers',
@@ -40,6 +44,8 @@ class Display implements ActionInterface
             null,
             'bg=blue;fg=white'
         );
+
+        $this->taskFollower->show();
 
         return $tweet;
     }

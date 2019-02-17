@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Twitter\Task\Conditions;
+namespace App\Twitter\Task\Step\Condition;
 
-class FieldMatch implements ConditionInterface
+use App\Twitter\Task\ConfigurableInterface;
+
+class FieldMatch implements ConditionInterface, ConfigurableInterface
 {
     /** @var array */
     private $config;
 
-    public function configure(?array $config): void
+    public function configure(array $config): void
     {
         $this->config = $config;
     }

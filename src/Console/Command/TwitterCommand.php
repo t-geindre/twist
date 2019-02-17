@@ -30,9 +30,6 @@ class TwitterCommand extends Command
     /** @var Scheduler */
     private $scheduler;
 
-    /** @var LoggerInterface */
-    private $logger;
-
     /** @var SymfonyStyle */
     private $io;
 
@@ -41,7 +38,6 @@ class TwitterCommand extends Command
         Client $client,
         TaskFactory $taskFactory,
         Scheduler $scheduler,
-        LoggerInterface $logger,
         SymfonyStyle $io
     ) {
         parent::__construct();
@@ -50,15 +46,22 @@ class TwitterCommand extends Command
         $this->client = $client;
         $this->taskFactory = $taskFactory;
         $this->scheduler = $scheduler;
-        $this->logger = $logger;
         $this->io = $io;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setupTasks();
+
         [$username, $password] = $this->getCredentials();
 
-        $this->logger->info('Setting up tasks');
+        $this->client->login($username, $password);
+
+        $this->scheduler->run();
+    }
+
+    protected function setupTasks(): void
+    {
         foreach ($this->config->get('tasks', []) as $taskName => $taskConfig) {
             $this->scheduler->addTask(
                 $this->taskFactory->create(array_merge(
@@ -67,11 +70,6 @@ class TwitterCommand extends Command
                 ))
             );
         }
-
-        $this->logger->info('Logging in Twitter');
-        $this->client->login($username, $password);
-
-        $this->scheduler->run();
     }
 
     protected function getCredentials(): array
@@ -81,19 +79,9 @@ class TwitterCommand extends Command
             $username = $this->io->ask('Username', $configUserName);
         } while (empty(trim($username)));
 
-        if ($configUserName !== $username) {
-            $this->config->set('username', $username);
-            try {
-                $this->config->persist();
-            } catch(\Throwable $e) {
-                $this->io->warning($e->getMessage());
-            }
-        }
+        $this->config->set('username', $username);
 
-        $password = $this->config->get('password');
-        while (empty($password)) {
-            $password = $this->io->askHidden('Password (hidden, never stored)');
-        }
+        $password = $this->io->askHidden('Password (hidden, never stored)');
 
         return [$username, $password];
     }

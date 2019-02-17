@@ -26,9 +26,9 @@ class ConsoleLogger extends AbstractLogger
         LogLevel::CRITICAL => 'error',
         LogLevel::ERROR => 'error',
         LogLevel::WARNING => 'warning',
-        LogLevel::NOTICE => 'comment',
-        LogLevel::INFO => 'comment',
-        LogLevel::DEBUG => 'comment',
+        LogLevel::NOTICE => 'block',
+        LogLevel::INFO => 'block',
+        LogLevel::DEBUG => 'block',
     ];
 
     /** @var OutputInterface */

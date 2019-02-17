@@ -2,6 +2,7 @@
 
 namespace App\Configuration;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Yaml\Parser;
 
@@ -22,19 +23,21 @@ class Configuration
     /** @var array */
     private $config;
 
-    /** @var bool */
-    private $hasChanges = false;
+    /** @var LoggerInterface */
+    private $logger;
 
     public function __construct(
         string $defaultConfigFile,
         Parser $parser,
         SerializerInterface $serializer,
+        LoggerInterface $logger,
         string $storagePath = null
     ) {
         $this->defaultConfigFile = $defaultConfigFile;
         $this->parser = $parser;
         $this->serializer = $serializer;
         $this->storagePath = $storagePath ?? $this->getDefaultStoragePath();
+        $this->logger = $logger;
     }
 
     public function get(string $key, $default = null)
@@ -46,7 +49,9 @@ class Configuration
     {
         $this->config[$key] = $value;
 
-        $this->hasChanges = true;
+        if (!file_exists($this->storagePath)) {
+            $this->persist();
+        }
     }
 
     public function load()
@@ -62,12 +67,18 @@ class Configuration
 
     public function persist()
     {
-        $dir = dirname($this->storagePath);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
+        try {
+            $dir = dirname($this->storagePath);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0777, true);
+            }
 
-        file_put_contents($this->storagePath, $this->serializer->serialize($this->config, 'yaml'));
+            file_put_contents($this->storagePath, $this->serializer->serialize($this->config, 'yaml'));
+
+            $this->logger->info(sprintf('Configuration saved in %s', $this->storagePath));
+        } catch (\Throwable $e) {
+            $this->logger->warning(sprintf('Unable to save configuration in %s', $this->storagePath));
+        }
     }
 
     protected function getDefaultStoragePath(): string

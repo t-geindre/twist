@@ -3,9 +3,9 @@
 namespace App\Twitter\Task\Source;
 
 use App\Twitter\Api\Client;
-use Psr\Log\LoggerInterface;
+use App\Twitter\Task\ConfigurableInterface;
 
-class Search implements SourceInterface
+class Search implements SourceInterface, ConfigurableInterface
 {
     /** @var Client */
     private $client;

@@ -3,9 +3,9 @@
 namespace App\Console\Command;
 
 use App\Configuration\Configuration;
-use App\Twitter\Task\Actions\Tweet\Reply;
 use App\Twitter\Api\Client;
 use App\Twitter\Browser\Client as Browser;
+use App\Twitter\Task\Step\Action\Tweet\Reply;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

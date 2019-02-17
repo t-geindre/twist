@@ -5,13 +5,15 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+        public: false
 
     App\:
         resource: '../src/*'
-        exclude: '../src/{Kernel.php}'
+        exclude:  '../src/Twitter/Task/*'
 
     Psr\Container\ContainerInterface:
         synthetic: true
+        public: true
 
     # TWITTER
     HeadlessChromium\BrowserFactory:
@@ -26,25 +28,13 @@ services:
             $headersInterceptorScript: '%root_dir%/src/Twitter/Browser/Resource/headers-interceptor.js'
             $requestProxyScript: '%root_dir%/src/Twitter/Browser/Resource/request-proxy.js'
 
-    App\Twitter\Task\Task:
+    App\Twitter\Task\:
+        resource: '../src/Twitter/Task/*'
+        exclude:  '../src/Twitter/Task/{TaskFactory.php,Task.php,Step/Action/ConditionalAction.php}'
         shared: false
         public: true
-        arguments:
-            $sources:
-                search: '@App\Twitter\Task\Source\Search'
-            $actions:
-                favorite: '@App\Twitter\Task\Actions\Tweet\Favorite'
-                friendship_mentioned: '@App\Twitter\Task\Actions\Tweet\FriendshipMentioned'
-                friendship_owner: '@App\Twitter\Task\Actions\Tweet\FriendshipOwner'
-                reply: '@App\Twitter\Task\Actions\Tweet\Reply'
-                retweet: '@App\Twitter\Task\Actions\Tweet\Retweet'
-                retrieve_original_tweet: '@App\Twitter\Task\Actions\Tweet\RetrieveOriginalTweet'
-                display: '@App\Twitter\Task\Actions\Tweet\Display'
-                reload: '@App\Twitter\Task\Actions\Tweet\Reload'
-            $conditions:
-                field_comparison: '@App\Twitter\Task\Conditions\FieldComparison'
-                field_match: '@App\Twitter\Task\Conditions\FieldMatch'
-                is_unique: '@App\Twitter\Task\Conditions\IsUnique'
+
+    App\Twitter\Task\TaskFactory: ~
 
     # CONFIGURATION
     Symfony\Component\Yaml\Parser: ~
@@ -68,8 +58,7 @@ services:
 
     # CONSOLE
     Psr\Log\LoggerInterface: '@App\Console\Logger\ConsoleLogger'
-
-    App\Console\Logger\ConsoleLogger: ~
+    App\Scheduler\TaskFollowerInterface: '@App\Console\Task\TaskFollower'
 
     Symfony\Component\Console\Input\ArgvInput: ~
     Symfony\Component\Console\Input\InputInterface:

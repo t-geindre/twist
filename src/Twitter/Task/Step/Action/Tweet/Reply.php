@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Twitter\Task\Actions\Tweet;
+namespace App\Twitter\Task\Step\Action\Tweet;
 
-use App\Twitter\Task\Actions\ActionInterface;
+use App\Twitter\Task\Step\Action\ActionInterface;
 use App\Twitter\Api\Client;
-use App\Twitter\Task\Configurable\NotConfigurableTrait;
 
 class Reply implements ActionInterface
 {
-    use NotConfigurableTrait;
-
     const REPLY_PARTS = [
         [
             'Je tente ma chance,',

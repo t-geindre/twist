@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Twitter\Task\Actions\Tweet;
+namespace App\Twitter\Task\Step\Action\Tweet;
 
-use App\Twitter\Task\Actions\ActionInterface;
-use App\Twitter\Task\Configurable\NotConfigurableTrait;
+use App\Twitter\Task\Step\Action\ActionInterface;
 use Psr\Log\LoggerInterface;
 
 class RetrieveOriginalTweet implements ActionInterface
 {
-    use NotConfigurableTrait;
-
     /** @var LoggerInterface */
     private $logger;
 
