@@ -19,6 +19,8 @@ class Retweet implements ActionInterface
     {
         $this->client->retweetStatus(['id' => $tweet['id_str']]);
 
+        $tweet['retweeted'] = true;
+
         return $tweet;
     }
 }

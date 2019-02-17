@@ -19,6 +19,8 @@ class Favorite implements ActionInterface
     {
         $this->client->createFavorite(['id' => $tweet['id_str']]);
 
+        $tweet['favorited'] = true;
+
         return $tweet;
     }
 }
