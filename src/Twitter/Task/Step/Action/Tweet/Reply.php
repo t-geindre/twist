@@ -87,7 +87,7 @@ class Reply implements ActionInterface
     {
         $reply = $this->generateReply(self::REPLY_PARTS);
 
-        if (preg_match('/mention|tag|ami/', $tweet['full_text'])) {
+        if (preg_match('/mention|tag|ami/i', $tweet['full_text'])) {
             $reply .= $this->generateReply(self::MENTION_PARTS, true);
         }
 

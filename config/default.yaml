@@ -34,7 +34,7 @@ tasks:
                 conditions:
                     -
                         type: 'Condition\FieldMatch'
-                        config: { field: 'full_text', pattern: '/(fav|like)/' }
+                        config: { field: 'full_text', pattern: '/(fav|like)/i' }
             friendship_owner:
                 type: 'Action\Tweet\FriendshipOwner'
                 config: { follow: true, ttl: '30 DAYS' }
