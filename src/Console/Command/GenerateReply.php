@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Console\Command;
+namespace Twist\Console\Command;
 
-use App\Configuration\Configuration;
-use App\Twitter\Task\Step\Action\ActionInterface;
-use App\Twitter\Task\TaskFactory;
+use Twist\Configuration\Configuration;
+use Twist\Twitter\Task\Step\Action\ActionInterface;
+use Twist\Twitter\Task\TaskFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateReplyCommand extends Command
+class GenerateReply extends Command
 {
     protected static $defaultName = 'generate:reply';
 

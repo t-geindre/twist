@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Twitter\Task\Step\Action\Tweet\Reply;
+namespace Twist\Twitter\Task\Step\Action\Tweet\Reply;
 
-use App\Twitter\Task\ConfigurableInterface;
-use App\Twitter\Task\Step\Action\ActionInterface;
+use Twist\Twitter\Task\ConfigurableInterface;
+use Twist\Twitter\Task\Step\Action\ActionInterface;
 
 class AddSourceTags implements ActionInterface, ConfigurableInterface
 {

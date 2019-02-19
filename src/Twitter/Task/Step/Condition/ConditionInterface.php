@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Twitter\Task\Step\Condition;
+namespace Twist\Twitter\Task\Step\Condition;
 
-use App\Twitter\Task\Step\StepInterface;
+use Twist\Twitter\Task\Step\StepInterface;
 
 interface ConditionInterface extends StepInterface
 {

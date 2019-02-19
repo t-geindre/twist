@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Scheduler;
+namespace Twist\Scheduler;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;

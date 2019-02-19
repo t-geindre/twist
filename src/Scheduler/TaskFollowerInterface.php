@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Scheduler;
+namespace Twist\Scheduler;
 
 interface TaskFollowerInterface
 {

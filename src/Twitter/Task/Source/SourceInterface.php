@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Twitter\Task\Source;
+namespace Twist\Twitter\Task\Source;
 
 interface SourceInterface
 {

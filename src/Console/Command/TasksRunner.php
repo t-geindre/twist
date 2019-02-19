@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Console\Command;
+namespace Twist\Console\Command;
 
-use App\Configuration\Configuration;
-use App\Scheduler\Scheduler;
-use App\Twitter\Browser\Client;
-use App\Twitter\Task\TaskFactory;
+use Twist\Configuration\Configuration;
+use Twist\Scheduler\Scheduler;
+use Twist\Twitter\Browser\Client;
+use Twist\Twitter\Task\TaskFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class TwitterCommand extends Command
+class TasksRunner extends Command
 {
-    const COMMAND_NAME = 'seek:contest';
+    const COMMAND_NAME = 'tasks:run';
 
     protected static $defaultName = self::COMMAND_NAME;
 

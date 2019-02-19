@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Twitter\Task\Step\Action;
+namespace Twist\Twitter\Task\Step\Action;
 
-use App\Twitter\Task\Step\StepInterface;
+use Twist\Twitter\Task\Step\StepInterface;
 
 interface ActionInterface extends StepInterface
 {

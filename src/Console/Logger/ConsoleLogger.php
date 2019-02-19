@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Logger;
+namespace Twist\Console\Logger;
 
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;

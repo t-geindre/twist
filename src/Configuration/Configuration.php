@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Configuration;
+namespace Twist\Configuration;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\SerializerInterface;

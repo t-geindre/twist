@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Console\Task;
+namespace Twist\Console\Task;
 
-use App\Scheduler\TaskFollowerInterface;
+use Twist\Scheduler\TaskFollowerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Style\SymfonyStyle;
 

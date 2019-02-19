@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Twitter\Task;
+namespace Twist\Twitter\Task;
 
-use App\Scheduler\TaskFollowerInterface;
-use App\Twitter\Task\Source\SourceInterface;
-use App\Twitter\Task\Step\Action\ActionInterface;
-use App\Twitter\Task\Step\Action\ConditionalAction;
-use App\Twitter\Task\Step\Condition\ConditionInterface;
-use App\Twitter\Task\Step\StepInterface;
+use Twist\Scheduler\TaskFollowerInterface;
+use Twist\Twitter\Task\Source\SourceInterface;
+use Twist\Twitter\Task\Step\Action\ActionInterface;
+use Twist\Twitter\Task\Step\Action\ConditionalAction;
+use Twist\Twitter\Task\Step\Condition\ConditionInterface;
+use Twist\Twitter\Task\Step\StepInterface;
 use Psr\Container\ContainerInterface;
 
 class TaskFactory
 {
-    const SOURCE_NAMESPACE = 'App\Twitter\Task\Source\\';
-    const STEP_NAMESPACE = 'App\Twitter\Task\Step\\';
+    const SOURCE_NAMESPACE = 'Twist\Twitter\Task\Source\\';
+    const STEP_NAMESPACE = 'Twist\Twitter\Task\Step\\';
 
     /** @var ContainerInterface */
     private $container;

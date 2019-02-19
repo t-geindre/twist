@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Twitter\Task\Step\Action\Tweet\Reply;
+namespace Twist\Twitter\Task\Step\Action\Tweet\Reply;
 
-use App\Twitter\Task\Step\Action\ActionInterface;
+use Twist\Twitter\Task\Step\Action\ActionInterface;
 
 class Create implements ActionInterface
 {

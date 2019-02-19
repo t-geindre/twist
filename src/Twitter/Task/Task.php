@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Twitter\Task;
+namespace Twist\Twitter\Task;
 
-use App\Scheduler\TaskFollowerInterface;
-use App\Scheduler\TaskInterface;
-use App\Twitter\Task\Source\SourceInterface;
-use App\Twitter\Task\Step\Action\ActionInterface;
-use App\Twitter\Task\Step\Condition\ConditionInterface;
-use App\Twitter\Task\Step\ResetableInterface;
-use App\Twitter\Task\Step\StepInterface;
+use Twist\Scheduler\TaskFollowerInterface;
+use Twist\Scheduler\TaskInterface;
+use Twist\Twitter\Task\Source\SourceInterface;
+use Twist\Twitter\Task\Step\Action\ActionInterface;
+use Twist\Twitter\Task\Step\Condition\ConditionInterface;
+use Twist\Twitter\Task\Step\ResetableInterface;
+use Twist\Twitter\Task\Step\StepInterface;
 
 class Task implements TaskInterface
 {

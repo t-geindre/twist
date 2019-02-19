@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Twitter\Task\Step\Action\Tweet;
+namespace Twist\Twitter\Task\Step\Action\Tweet;
 
-use App\Twitter\Task\Step\Action\ActionInterface;
+use Twist\Twitter\Task\Step\Action\ActionInterface;
 use Psr\Log\LoggerInterface;
 
 class RetrieveOriginalTweet implements ActionInterface

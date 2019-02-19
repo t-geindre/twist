@@ -7,7 +7,7 @@ services:
         autoconfigure: true
         public: false
 
-    App\:
+    Twist\:
         resource: '../src/*'
         exclude:  '../src/Twitter/Task/*'
 
@@ -23,18 +23,18 @@ services:
         factory: ['@HeadlessChromium\BrowserFactory', 'createBrowser']
 #        arguments: [headless: false]
 
-    App\Twitter\Browser\Client:
+    Twist\Twitter\Browser\Client:
         arguments:
             $headersInterceptorScript: '%root_dir%/src/Twitter/Browser/Resource/headers-interceptor.js'
             $requestProxyScript: '%root_dir%/src/Twitter/Browser/Resource/request-proxy.js'
 
-    App\Twitter\Task\:
+    Twist\Twitter\Task\:
         resource: '../src/Twitter/Task/*'
         exclude:  '../src/Twitter/Task/{TaskFactory.php,Task.php,Step/Action/ConditionalAction.php}'
         shared: false
         public: true
 
-    App\Twitter\Task\TaskFactory: ~
+    Twist\Twitter\Task\TaskFactory: ~
 
     # CONFIGURATION
     Symfony\Component\Yaml\Parser: ~
@@ -49,7 +49,7 @@ services:
         arguments:
             $encoders: ['@Symfony\Component\Serializer\Encoder\YamlEncoder']
 
-    App\Configuration\Configuration:
+    Twist\Configuration\Configuration:
         arguments:
             $defaultConfigFile: '%root_dir%/config/default.yaml'
             $parser: '@Symfony\Component\Yaml\Parser'
@@ -57,8 +57,8 @@ services:
             - ['load']
 
     # CONSOLE
-    Psr\Log\LoggerInterface: '@App\Console\Logger\ConsoleLogger'
-    App\Scheduler\TaskFollowerInterface: '@App\Console\Task\TaskFollower'
+    Psr\Log\LoggerInterface: '@Twist\Console\Logger\ConsoleLogger'
+    Twist\Scheduler\TaskFollowerInterface: '@Twist\Console\Task\TaskFollower'
 
     Symfony\Component\Console\Input\ArgvInput: ~
     Symfony\Component\Console\Input\InputInterface:
@@ -76,7 +76,7 @@ services:
 
     Symfony\Component\Console\Application:
         calls:
-            - ['add', ['@App\Console\Command\TwitterCommand']]
-            - ['add', ['@App\Console\Command\GenerateReplyCommand']]
-            - ['setDefaultCommand', [!php/const App\Console\Command\TwitterCommand::COMMAND_NAME, false]]
+            - ['add', ['@Twist\Console\Command\TasksRunner']]
+            - ['add', ['@Twist\Console\Command\GenerateReply']]
+            - ['setDefaultCommand', [!php/const Twist\Console\Command\TasksRunner::COMMAND_NAME, false]]
         public: true

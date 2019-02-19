@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Twitter\Task\Step;
+namespace Twist\Twitter\Task\Step;
 
 interface ResetableInterface
 {

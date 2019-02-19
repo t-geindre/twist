@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Twitter\Task\Step\Condition;
+namespace Twist\Twitter\Task\Step\Condition;
 
-use App\Twitter\Task\ConfigurableInterface;
+use Twist\Twitter\Task\ConfigurableInterface;
 
 class FieldComparison implements ConditionInterface, ConfigurableInterface
 {

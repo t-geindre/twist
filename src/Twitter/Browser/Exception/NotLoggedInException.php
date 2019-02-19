@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Twitter\Browser\Exception;
+namespace Twist\Twitter\Browser\Exception;
 
 
 class NotLoggedInException extends BrowserException

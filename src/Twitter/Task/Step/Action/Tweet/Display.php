@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Twitter\Task\Step\Action\Tweet;
+namespace Twist\Twitter\Task\Step\Action\Tweet;
 
-use App\Console\Task\TaskFollower;
-use App\Twitter\Task\Step\Action\ActionInterface;
+use Twist\Console\Task\TaskFollower;
+use Twist\Twitter\Task\Step\Action\ActionInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class Display implements ActionInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Twitter\Task;
+namespace Twist\Twitter\Task;
 
 interface ConfigurableInterface
 {

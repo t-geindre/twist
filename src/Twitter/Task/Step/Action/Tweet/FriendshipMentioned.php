@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Twitter\Task\Step\Action\Tweet;
+namespace Twist\Twitter\Task\Step\Action\Tweet;
 
-use App\Twitter\Task\Step\Action\ActionInterface;
-use App\Twitter\Task\Step\Action\User\Friendship;
-use App\Twitter\Task\ConfigurableInterface;
+use Twist\Twitter\Task\Step\Action\ActionInterface;
+use Twist\Twitter\Task\Step\Action\User\Friendship;
+use Twist\Twitter\Task\ConfigurableInterface;
 
 class FriendshipMentioned implements ActionInterface, ConfigurableInterface
 {

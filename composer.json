@@ -2,7 +2,7 @@
     "name": "seeker-crew/tw-contest",
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "Twist\\": "src/"
         }
     },
     "require": {

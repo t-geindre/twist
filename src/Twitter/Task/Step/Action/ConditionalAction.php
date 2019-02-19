@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Twitter\Task\Step\Action;
+namespace Twist\Twitter\Task\Step\Action;
 
-use App\Twitter\Task\Step\Condition\ConditionInterface;
+use Twist\Twitter\Task\Step\Condition\ConditionInterface;
 
 class ConditionalAction implements ActionInterface
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Twitter\Task\Step\Condition;
+namespace Twist\Twitter\Task\Step\Condition;
 
-use App\Twitter\Task\Step\ResetableInterface;
+use Twist\Twitter\Task\Step\ResetableInterface;
 
 class IsUnique implements ConditionInterface, ResetableInterface
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Twitter\Browser;
+namespace Twist\Twitter\Browser;
 
-use App\Twitter\Browser\Exception\BadCredentialsException;
-use App\Twitter\Browser\Exception\NotLoggedInException;
+use Twist\Twitter\Browser\Exception\BadCredentialsException;
+use Twist\Twitter\Browser\Exception\NotLoggedInException;
 use HeadlessChromium\Browser;
 use HeadlessChromium\Page;
 use Psr\Log\LoggerInterface;

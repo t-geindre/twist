@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Twitter\Task\Source;
+namespace Twist\Twitter\Task\Source;
 
-use App\Twitter\Api\Client;
-use App\Twitter\Task\ConfigurableInterface;
+use Twist\Twitter\Api\Client;
+use Twist\Twitter\Task\ConfigurableInterface;
 
 class MentionsTimeline implements SourceInterface, ConfigurableInterface
 {

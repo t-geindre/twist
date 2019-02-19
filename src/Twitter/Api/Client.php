@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Twitter\Api;
+namespace Twist\Twitter\Api;
 
-use App\Twitter\Browser\Client as BrowserClient;
+use Twist\Twitter\Browser\Client as BrowserClient;
 
 class Client
 {
