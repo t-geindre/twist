@@ -18,7 +18,7 @@ class FieldMatch implements ConditionInterface, ConfigurableInterface
     {
         return (bool) preg_match(
             $this->config['pattern'],
-            $subject[$this->config['field']]
+            $subject[$this->config['field']] // todo propertyacess
         );
     }
 }

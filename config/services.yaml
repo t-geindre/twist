@@ -77,6 +77,6 @@ services:
     Symfony\Component\Console\Application:
         calls:
             - ['add', ['@App\Console\Command\TwitterCommand']]
-            - ['add', ['@App\Console\Command\LegacyCommand']]
+            - ['add', ['@App\Console\Command\GenerateReplyCommand']]
             - ['setDefaultCommand', [!php/const App\Console\Command\TwitterCommand::COMMAND_NAME, false]]
         public: true

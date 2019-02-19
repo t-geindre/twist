@@ -44,7 +44,7 @@ class TaskFactory
         );
     }
 
-    protected function getSteps(array $steps): array
+    public function getSteps(array $steps): array
     {
         $loadedSteps = [];
         foreach ($steps as $stepName => $step) {
@@ -61,7 +61,7 @@ class TaskFactory
         return $loadedSteps;
     }
 
-    protected function getConditions(array $conditions): array
+    public function getConditions(array $conditions): array
     {
         $loadedConditions = [];
         foreach ($conditions as $condition) {
@@ -71,7 +71,7 @@ class TaskFactory
         return $loadedConditions;
     }
 
-    protected function getCondition(string $type, array $config): ConditionInterface
+    public function getCondition(string $type, array $config): ConditionInterface
     {
         $condition = $this->getStep($type, $config);
 
@@ -82,7 +82,7 @@ class TaskFactory
         return $condition;
     }
 
-    protected function getStep(string $type, array $config): StepInterface
+    public function getStep(string $type, array $config): StepInterface
     {
         $class = self::STEP_NAMESPACE.$type;
 
@@ -99,7 +99,7 @@ class TaskFactory
         return $step;
     }
 
-    protected function getSource(string $type, array $config): SourceInterface
+    public function getSource(string $type, array $config): SourceInterface
     {
         $class = self::SOURCE_NAMESPACE.$type;
 

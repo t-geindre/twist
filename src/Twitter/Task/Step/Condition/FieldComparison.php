@@ -21,7 +21,7 @@ class FieldComparison implements ConditionInterface, ConfigurableInterface
     {
         return $this->compare(
             $this->config['operator'],
-            $subject[$this->config['field']],
+            $subject[$this->config['field']], // propertyaccess
             $this->config['value']
         );
     }

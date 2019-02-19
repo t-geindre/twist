@@ -6,7 +6,6 @@ use App\Configuration\Configuration;
 use App\Scheduler\Scheduler;
 use App\Twitter\Browser\Client;
 use App\Twitter\Task\TaskFactory;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
