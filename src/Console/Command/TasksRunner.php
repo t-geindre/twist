@@ -13,9 +13,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class TasksRunner extends Command
 {
-    const COMMAND_NAME = 'tasks:run';
-
-    protected static $defaultName = self::COMMAND_NAME;
+    protected static $defaultName = 'run';
 
     /** @var Configuration */
     private $config;
@@ -57,6 +55,11 @@ class TasksRunner extends Command
         $this->client->login($username, $password);
 
         $this->scheduler->run();
+    }
+
+    protected function configure()
+    {
+        $this->setDescription('Run configured tasks');
     }
 
     protected function setupTasks(): void

@@ -1,30 +1,6 @@
 #!/usr/bin/env php
 <?php
-
-use Psr\Container\ContainerInterface;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-
 set_time_limit(0);
 require dirname(__DIR__).'/vendor/autoload.php';
+(new \Twist\Console\Application())->run();
 
-$rootDir = realpath(__DIR__.'/../').'/';
-
-$container = new ContainerBuilder();
-$container->setParameter('root_dir', $rootDir);
-
-$loader = new YamlFileLoader($container, new FileLocator($rootDir.'config'));
-$loader->load('services.yaml');
-
-$container->compile();
-
-$container->set(ContainerInterface::class, $container);
-
-$container->get(Application::class)->run(
-    $container->get(InputInterface::class),
-    $container->get(OutputInterface::class)
-);

@@ -1,5 +1,6 @@
 parameters:
-    kernel.secret: ~
+    configuration.file: ~
+    browser.headless: true
 
 services:
     _defaults:
@@ -21,7 +22,7 @@ services:
 
     HeadlessChromium\Browser:
         factory: ['@HeadlessChromium\BrowserFactory', 'createBrowser']
-#        arguments: [headless: false]
+        arguments: [headless: '%browser.headless%']
 
     Twist\Twitter\Browser\Client:
         arguments:
@@ -53,30 +54,25 @@ services:
         arguments:
             $defaultConfigFile: '%root_dir%/config/default.yaml'
             $parser: '@Symfony\Component\Yaml\Parser'
+            $storagePath: '%configuration.file%'
         calls:
             - ['load']
 
     # CONSOLE
+    Twist\Console\Command\:
+        resource: '../src/Console/Command/*'
+        public: true
+        tags: [{ name: 'twist.command' }]
+
     Psr\Log\LoggerInterface: '@Twist\Console\Logger\ConsoleLogger'
     Twist\Scheduler\TaskFollowerInterface: '@Twist\Console\Task\TaskFollower'
 
-    Symfony\Component\Console\Input\ArgvInput: ~
     Symfony\Component\Console\Input\InputInterface:
-        alias: 'Symfony\Component\Console\Input\ArgvInput'
+        synthetic: true
         public: true
 
-    Symfony\Component\Console\Output\ConsoleOutput:
-        arguments:
-            $verbosity: !php/const Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERY_VERBOSE
     Symfony\Component\Console\Output\OutputInterface:
-        alias: 'Symfony\Component\Console\Output\ConsoleOutput'
+        synthetic: true
         public: true
 
     Symfony\Component\Console\Style\SymfonyStyle: ~
-
-    Symfony\Component\Console\Application:
-        calls:
-            - ['add', ['@Twist\Console\Command\TasksRunner']]
-            - ['add', ['@Twist\Console\Command\GenerateReply']]
-            - ['setDefaultCommand', [!php/const Twist\Console\Command\TasksRunner::COMMAND_NAME, false]]
-        public: true

@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateReply extends Command
 {
-    protected static $defaultName = 'generate:reply';
+    protected static $defaultName = 'generate-reply';
 
     /** @var Configuration */
     private $configuration;
@@ -35,6 +35,7 @@ class GenerateReply extends Command
         $this->addOption('status', null, InputOption::VALUE_OPTIONAL, 'Status content to reply to', 'Hi there! #hello #welcome');
         $this->addOption('author', null, InputOption::VALUE_OPTIONAL, 'Status author to reply to', '@johndoe');
         $this->addOption('count', null, InputOption::VALUE_OPTIONAL, 'Number of replies to generate', 1);
+        $this->setDescription('Generate reply according to given task configuration');
     }
 
 

@@ -59,6 +59,9 @@ class Configuration
         $file = $this->storagePath;
 
         if (!file_exists($file)) {
+            if ($file != $this->getDefaultStoragePath()) {
+                $this->logger->warning(sprintf('"%s" does not exist, default configuration loaded', $this->storagePath));
+            }
             $file = $this->defaultConfigFile;
         }
 
