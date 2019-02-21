@@ -1,39 +1,48 @@
-var twitterContestHeadersLogs = null;
+var twist = twist || {};
 
-(function() {
+(function(window) {
     var
-        proxiedXhrOpen = XMLHttpRequest.prototype.open,
-        proxiedXhrSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader,
-        proxiedXhrSend = XMLHttpRequest.prototype.send,
+        proxied = {},
         headersLog = false,
-        twitterApiUrl = 'https://api.twitter.com'
+        twitterApiUrl = 'https://api.twitter.com',
+        intercepted = false,
+        xhrPrototype = window.XMLHttpRequest.prototype
     ;
 
-    XMLHttpRequest.prototype.open = function(method, url) {
-        if (url.substr(0, twitterApiUrl.length) === twitterApiUrl) {
+    ['open', 'setRequestHeader', 'send'].forEach(
+        method => proxied[method] = xhrPrototype[method]
+    );
+
+    xhrPrototype.open = function(method, url) {
+        if (!intercepted && url.substr(0, twitterApiUrl.length) === twitterApiUrl) {
             headersLog = {};
         }
 
-        return proxiedXhrOpen.apply(this, arguments);
+        return proxied.open.apply(this, arguments);
     };
 
-    XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
-        if (headersLog) {
+    xhrPrototype.setRequestHeader = function(header, value) {
+        if (!intercepted && headersLog) {
             headersLog[header] = value;
         }
 
-        return proxiedXhrSetRequestHeader.apply(this, arguments);
+        return proxied.setRequestHeader.apply(this, arguments);
     };
 
-    XMLHttpRequest.prototype.send = function() {
-        if (headersLog) {
-            XMLHttpRequest.prototype.open = proxiedXhrOpen;
-            XMLHttpRequest.prototype.send = proxiedXhrSend;
-            XMLHttpRequest.prototype.setRequestHeader = proxiedXhrSetRequestHeader;
-            twitterContestHeadersLogs = headersLog;
-            headersLog = false;
+    xhrPrototype.send = function() {
+        if (!intercepted && headersLog) {
+            Object.keys(proxied).forEach(method => xhrPrototype[method] = proxied[method]);
+            intercepted = true;
         }
 
-        return proxiedXhrSend.apply(this, arguments);
+        return proxied.send.apply(this, arguments);
     };
-})();
+
+    twist.getInterceptedHeaders = () => {
+        if (!intercepted) {
+            return false;
+        }
+
+        return headersLog;
+    }
+})(window);

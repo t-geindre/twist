@@ -34,7 +34,7 @@ class Display implements ActionInterface
             null,
             'bg=green;fg=white;options=bold'
         );
-        $this->io->block($tweet['full_text'] ?? $tweet['text']);
+        $this->io->block(html_entity_decode($tweet['full_text'] ?? $tweet['text']));
         $this->io->block(
             sprintf(
                 '%s retweets - %s favorites',

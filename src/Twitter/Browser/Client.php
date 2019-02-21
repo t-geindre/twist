@@ -86,15 +86,23 @@ class Client
         );
 
         $uid = uniqid();
-        $this->page->evaluate('twitterContestRequest(
+        $this->page->evaluate('twist.sendRequest(
             '.json_encode($uid).',
             '.json_encode($settings).'
         )');
 
         do {
             usleep(100000); // 100ms
-            $result = $this->page->evaluate('twitterContestGetRequestResult('.json_encode($uid).')')->getReturnValue();
+            $result = $this->page->evaluate('twist.getRequestResult('.json_encode($uid).')')->getReturnValue();
         } while ($result['status'] === 'pending');
+
+        if ($result['status'] === 'failed') {
+            throw new \RuntimeException(sprintf(
+                'An error occurred while requesting "%s", status: "%s"',
+                $settings['url'] ?? 'none',
+                $result['code']
+            ));
+        }
 
         return $result['data'];
     }
@@ -123,8 +131,8 @@ class Client
             // Scroll down until there's an API call
             $this->page->evaluate("window.scrollTo(0,document.body.scrollHeight);");
             usleep(100000); // 100ms
-            $this->requestHeaders = $this->page->evaluate('twitterContestHeadersLogs')->getReturnValue();
-        } while (null === $this->requestHeaders);
+            $this->requestHeaders = $this->page->evaluate('twist.getInterceptedHeaders()')->getReturnValue();
+        } while (false === $this->requestHeaders);
 
         // Navigate to search page, avoid overload
         $this->page->navigate(self::SEARCH_URL);

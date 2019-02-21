@@ -1,29 +1,37 @@
-var twitterContestRequestStates = {};
+var twist = twist || {};
 
-function twitterContestGetRequestResult(uid) {
-    let result = twitterContestRequestStates[uid];
+(function(window, undefined) {
+    var requests = {};
 
-    if (result.status !== 'pending') {
-        delete twitterContestRequestStates[uid];
-    }
+    window.twist.sendRequest = function(uid, settings) {
+        requests[uid] = {status: 'pending', data: null};
 
-    return result;
-}
-
-function twitterContestRequest(uid, settings)
-{
-    twitterContestRequestStates[uid] = {
-        status: 'pending'
+        window.jQuery.ajax(settings).then(
+            (data, status) => {
+                requests[uid] = {data, status};
+            },
+            (jqXHR, textStatus) => {
+                requests[uid] = {
+                    status: 'failed',
+                    error: textStatus,
+                    data: jqXHR.responseText,
+                    code: jqXHR.status
+                }
+            }
+        );
     };
 
-    settings['success'] = (function(uid) {
-        return function (data, status) {
-            twitterContestRequestStates[uid] = {
-                status,
-                data
-            };
-        };
-    })(uid);
+    window.twist.getRequestResult = function(uid) {
+        let result = requests[uid];
 
-    jQuery.ajax(settings);
-}
+        if (result !== undefined) {
+            if (result.status !== 'pending') {
+                delete requests[uid];
+            }
+
+            return result;
+        }
+
+        throw 'Unknown request uid '.uid;
+    };
+})(window);

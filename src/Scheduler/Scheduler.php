@@ -3,7 +3,6 @@
 namespace Twist\Scheduler;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 class Scheduler
 {
@@ -16,10 +15,14 @@ class Scheduler
     /** @var TaskFollowerInterface */
     private $taskFollower;
 
-    public function __construct(LoggerInterface $logger, TaskFollowerInterface $taskFollower)
+    /** @var bool */
+    private $handleException;
+
+    public function __construct(LoggerInterface $logger, TaskFollowerInterface $taskFollower, bool $handleException = true)
     {
         $this->logger = $logger;
         $this->taskFollower = $taskFollower;
+        $this->handleException = $handleException;
     }
 
     public function addTask(TaskInterface $task)
@@ -67,7 +70,16 @@ class Scheduler
 
         foreach ($this->tasks as &$task) {
             if ($task['pause'] === 0) {
-                $task['task']->run();
+                try {
+                    $task['task']->run();
+                } catch(\Throwable $e) {
+                    if (!$this->handleException) {
+                        throw $e;
+                    }
+
+                    $this->logger->error($e->getMessage());
+                    $this->logger->warning('Task stopped, next run scheduled');
+                }
                 $task['pause'] = $task['task']->getPauseDuration();
             }
         }
