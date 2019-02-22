@@ -25,6 +25,9 @@ class Client
     /** @var LoggerInterface */
     private $logger;
 
+    /** @var int */
+    private $requestsCount = 0;
+
     public function __construct(
         Browser $browser,
         LoggerInterface $logger,
@@ -73,6 +76,13 @@ class Client
     public function request(array $settings)
     {
         $this->assertLoggedIn();
+
+        // Reload page to avoid overload
+        if ($this->requestsCount++ > 300) {
+            $this->requestsCount = 0;
+            $this->page->evaluate('window.document.location.reload()');
+            $this->page->waitForReload();
+        }
 
         $settings = array_merge_recursive(
             $settings,
