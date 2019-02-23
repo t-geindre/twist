@@ -37,6 +37,10 @@ services:
 
     Twist\Twitter\Task\TaskFactory: ~
 
+    Twist\Twitter\Repository\FriendshipExpirationRepository:
+        factory: ['@Doctrine\ORM\EntityManager', 'getRepository']
+        arguments: ['Twist\Twitter\Entity\FriendshipExpiration']
+
     # CONFIGURATION
     Symfony\Component\Yaml\Parser: ~
 
@@ -74,3 +78,9 @@ services:
         public: true
 
     Symfony\Component\Console\Style\SymfonyStyle: ~
+
+    # DOCTRINE
+    Doctrine\ORM\EntityManager:
+        factory: ['@Twist\Doctrine\EntityManagerFactory', 'create']
+        arguments:
+            $paths: ['%root_dir%/src/Twitter/Entity']

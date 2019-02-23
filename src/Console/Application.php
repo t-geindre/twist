@@ -5,26 +5,34 @@ namespace Twist\Console;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application as BaseApplication;
-use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Twist\Configuration\Configuration;
 
 class Application extends BaseApplication
 {
     const COMMAND_TAG = 'twist.command';
 
-    /** @var ContainerBuilder */
+    /** @var ContainerInterface */
     private $container;
 
-    public function __construct(ContainerBuilder $container = null)
+    /** @var InputInterface */
+    private $input;
+
+    /** @var OutputInterface */
+    private $output;
+
+    /** @var string */
+    private $rootDir;
+
+    public function __construct()
     {
         parent::__construct('Twist', '1.0');
 
-        $this->container = null === $container ? new ContainerBuilder() : $container;
+        $this->rootDir = realpath(__DIR__.'/../../').'/';
 
         $this
             ->getDefinition()
@@ -36,34 +44,40 @@ class Application extends BaseApplication
 
     public function doRun(InputInterface $input, OutputInterface $output)
     {
-        $rootDir = realpath(__DIR__.'/../../').'/';
+        $this->input = $input;
+        $this->output = $output;
 
-        $this->container->setParameter('root_dir', $rootDir);
+        $this->buildContainer();
+        $this->registerCommands();
 
-        $loader = new YamlFileLoader($this->container, new FileLocator($rootDir.'config'));
-        $loader->load('services.yaml');
+        return parent::doRun($this->input, $this->output);
+    }
+
+    protected function buildContainer(): void
+    {
+        $this->container = new ContainerBuilder();
+        $this->container->setParameter('root_dir', $this->rootDir);
 
         $this->container->setParameter(
             'browser.headless',
-            !$input->hasParameterOption(['--no-headless'], true)
+            !$this->input->hasParameterOption(['--no-headless'], true)
         );
 
-        if ($input->hasParameterOption(['--configuration-file', '-c'])) {
+        if ($this->input->hasParameterOption(['--configuration-file', '-c'])) {
             $this->container->setParameter(
                 'configuration.file',
-                $input->getParameterOption(['--configuration-file', '-c'])
+                $this->input->getParameterOption(['--configuration-file', '-c'])
             );
         }
 
+        (new YamlFileLoader($this->container, new FileLocator($this->rootDir.'config')))->load('services.yaml');
+
         $this->container->compile(true);
 
-        $this->registerSyntheticServices($input, $output);
-        $this->registerCommands();
+        $this->container->set(ContainerInterface::class, $this->container);
+        $this->container->set(InputInterface::class, $this->input);
+        $this->container->set(OutputInterface::class, $this->output);
 
-        return parent::doRun(
-            $this->container->get(InputInterface::class),
-            $this->container->get(OutputInterface::class)
-        );
     }
 
     protected function registerCommands()
@@ -75,12 +89,5 @@ class Application extends BaseApplication
             $command = $this->container->get($serviceId);
             $this->add($command);
         }
-    }
-
-    protected function registerSyntheticServices(InputInterface $input, OutputInterface $output)
-    {
-        $this->container->set(InputInterface::class, $input);
-        $this->container->set(OutputInterface::class, $output);
-        $this->container->set(ContainerInterface::class, $this->container);
     }
 }

@@ -2,14 +2,14 @@
 
 namespace Twist\Console\Command;
 
-use Twist\Configuration\Configuration;
-use Twist\Scheduler\Scheduler;
-use Twist\Twitter\Browser\Client;
-use Twist\Twitter\Task\TaskFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Twist\Configuration\Configuration;
+use Twist\Scheduler\Scheduler;
+use Twist\Twitter\Browser\Client;
+use Twist\Twitter\Task\TaskFactory;
 
 class TasksRunner extends Command
 {

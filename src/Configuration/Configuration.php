@@ -78,6 +78,14 @@ class Configuration
 
         $this->config = $this->parser->parseFile($file);
         $this->config = $this->resolveParameters($this->config);
+
+        if (!$this->get('database_path', false)) {
+            $this->config['database_path'] = sprintf(
+                '%s/%s.db',
+                dirname($this->storagePath),
+                pathinfo($this->storagePath, PATHINFO_FILENAME)
+            );
+        }
     }
 
     public function persist(): void
@@ -105,6 +113,11 @@ class Configuration
         }
 
         return $parameters[$key];
+    }
+
+    public function getStoragePath(): string
+    {
+        return $this->storagePath;
     }
 
     protected function resolveParameters(array $config): array
