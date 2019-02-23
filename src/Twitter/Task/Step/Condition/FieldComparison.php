@@ -8,6 +8,13 @@ class FieldComparison implements ConditionInterface, ConfigurableInterface
 {
     use FieldResolverTrait;
 
+    const TYPE_SUPPORTED_OPERATORS = [
+        'string' => ['eq', 'neq'],
+        'bool' => ['eq', 'neq'],
+        'int' => ['eq', 'neq', 'gte', 'gt', 'lt', 'lte'],
+        'date' => ['eq', 'neq', 'gte', 'gt', 'lt', 'lte']
+    ];
+
     /** @var array */
     private $config = [];
 
@@ -23,24 +30,61 @@ class FieldComparison implements ConditionInterface, ConfigurableInterface
     {
         return $this->compare(
             $this->config['operator'],
+            $this->config['type'] ?? 'string',
             $this->resolveField($this->config['field'], $subject),
             $this->config['value']
         );
     }
 
-    protected function compare(string $operator, $a, $b): bool
+    protected function compare(string $operator, string $type, $a, $b): bool
     {
         $operator = strtolower($operator);
+        $comparisonClosures = $this->getComparisonClosures();
 
-        if ($operator === 'eq') {
-            return $a == $b;
+        if (!array_key_exists($operator, $comparisonClosures)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Unsupported comparison operator "%s", supported types are: %s',
+                $operator,
+                implode(', ', array_keys($comparisonClosures))
+            ));
         }
 
-        if ($operator === 'neq') {
-            return $a != $b;
+        $supported = self::TYPE_SUPPORTED_OPERATORS[$type] ?? null;
+
+        if (!is_array($supported)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Unsupported comparison data type "%s", supported types are: %s',
+                $type,
+                implode(', ', array_keys(self::TYPE_SUPPORTED_OPERATORS))
+            ));
         }
 
-        $closures =  [
+        if (!in_array($operator, $supported)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Unsupported operator "%s" for data type "%s", supported operators are: %s',
+                $operator,
+                $type,
+                implode(', ', $supported)
+            ));
+        }
+
+        $conversionClosures = $this->getConversionClosures();
+
+        return $comparisonClosures[$operator](
+            $conversionClosures[$type]($a),
+            $conversionClosures[$type]($b)
+        );
+    }
+
+    protected function getComparisonClosures(): array
+    {
+        return [
+            'eq' => function ($a, $b) {
+                return $a == $b;
+            },
+            'neq' => function ($a, $b) {
+                return $a != $b;
+            },
             'gte' => function ($a, $b) {
                 return $a >= $b;
             },
@@ -54,37 +98,30 @@ class FieldComparison implements ConditionInterface, ConfigurableInterface
                 return $a <= $b;
             },
         ];
+    }
 
-        if (!isset($closures[$operator])) {
-            throw new \InvalidArgumentException(sprintf(
-                'Invalid comparison operator, supported operators are "%s", "%s given',
-                implode(', ', array_keys($closures)),
-                $operator
-            ));
-        }
+    protected function getConversionClosures()
+    {
+        return [
+            'string' => function ($value) {
+                return (string) $value;
+            },
+            'int' => function ($value) {
+                return (int) $value;
+            },
+            'bool' => function ($value) {
+                return (bool) $value;
+            },
+            'date' => function ($value) {
+                try {
+                    $date = new \DateTime($value);
+                } catch (\Throwable $e) {
+                    throw new \InvalidArgumentException(sprintf('Invalid date format "%s"', $value));
+                }
 
-        foreach ([$a, $b] as &$value) {
-            if (is_int($value)) {
-                continue;
-            }
-
-            if (is_numeric($value)) {
-                $value = (int) $value;
-                continue;
-            }
-
-            try {
-                $value = new \DateTime($value);
-            } catch (\Exception $e) {
-                throw new \InvalidArgumentException('Invalid value format given');
-            }
-        }
-
-        if (gettype($a) !== gettype($b)) {
-            throw new \InvalidArgumentException('Cannot compare values of different types');
-        }
-
-        return $closures[$operator]($a, $b);
+                return $date;
+            },
+        ];
     }
 }
 
