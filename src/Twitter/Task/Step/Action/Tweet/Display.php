@@ -37,9 +37,10 @@ class Display implements ActionInterface
         $this->io->block(html_entity_decode($tweet['full_text'] ?? $tweet['text']));
         $this->io->block(
             sprintf(
-                '%s retweets - %s favorites',
+                '%s retweets - %s favorites - %s',
                 $tweet['retweet_count'],
-                $tweet['favorite_count']
+                $tweet['favorite_count'],
+                (new \DateTime($tweet['created_at']))->format('d/m/Y H:i:s')
             ),
             null,
             'bg=blue;fg=white'
