@@ -24,13 +24,7 @@ class Application extends BaseApplication
     {
         parent::__construct('Twist', '1.0');
 
-        $rootDir = realpath(__DIR__.'/../../').'/';
-
         $this->container = null === $container ? new ContainerBuilder() : $container;
-        $this->container->setParameter('root_dir', $rootDir);
-
-        $loader = new YamlFileLoader($this->container, new FileLocator($rootDir.'config'));
-        $loader->load('services.yaml');
 
         $this
             ->getDefinition()
@@ -40,15 +34,14 @@ class Application extends BaseApplication
             ]);
     }
 
-    public function run(InputInterface $input = null, OutputInterface $output = null)
+    public function doRun(InputInterface $input, OutputInterface $output)
     {
-        if (null === $input) {
-            $input = new ArgvInput();
-        }
+        $rootDir = realpath(__DIR__.'/../../').'/';
 
-        if (null === $output) {
-            $output = new ConsoleOutput();
-        }
+        $this->container->setParameter('root_dir', $rootDir);
+
+        $loader = new YamlFileLoader($this->container, new FileLocator($rootDir.'config'));
+        $loader->load('services.yaml');
 
         $this->container->setParameter(
             'browser.headless',
@@ -67,7 +60,7 @@ class Application extends BaseApplication
         $this->registerSyntheticServices($input, $output);
         $this->registerCommands();
 
-        return parent::run(
+        return parent::doRun(
             $this->container->get(InputInterface::class),
             $this->container->get(OutputInterface::class)
         );
