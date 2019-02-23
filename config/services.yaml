@@ -55,8 +55,6 @@ services:
             $defaultConfigFile: '%root_dir%/config/default.yaml'
             $parser: '@Symfony\Component\Yaml\Parser'
             $storagePath: '%configuration.file%'
-        calls:
-            - ['load']
 
     # CONSOLE
     Twist\Console\Command\:

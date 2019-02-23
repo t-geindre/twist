@@ -6,6 +6,8 @@ use Twist\Twitter\Task\ConfigurableInterface;
 
 class FieldComparison implements ConditionInterface, ConfigurableInterface
 {
+    use FieldResolverTrait;
+
     /** @var array */
     private $config = [];
 
@@ -21,7 +23,7 @@ class FieldComparison implements ConditionInterface, ConfigurableInterface
     {
         return $this->compare(
             $this->config['operator'],
-            $subject[$this->config['field']], // propertyaccess
+            $this->resolveField($this->config['field'], $subject),
             $this->config['value']
         );
     }
@@ -85,3 +87,4 @@ class FieldComparison implements ConditionInterface, ConfigurableInterface
         return $closures[$operator]($a, $b);
     }
 }
+

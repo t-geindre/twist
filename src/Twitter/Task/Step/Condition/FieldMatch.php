@@ -6,6 +6,8 @@ use Twist\Twitter\Task\ConfigurableInterface;
 
 class FieldMatch implements ConditionInterface, ConfigurableInterface
 {
+    use FieldResolverTrait;
+
     /** @var array */
     private $config;
 
@@ -18,7 +20,7 @@ class FieldMatch implements ConditionInterface, ConfigurableInterface
     {
         return (bool) preg_match(
             $this->config['pattern'],
-            $subject[$this->config['field']] // todo propertyacess
+            $this->resolveField($this->config['field'], $subject)
         );
     }
 }
