@@ -93,4 +93,12 @@ class Client
     {
         return $this->request('GET', 'friends/list.json', $data);
     }
+
+    /**
+     * See https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-destroy
+     */
+    public function destroyFriendship(array $data)
+    {
+        return $this->request('POST', 'friendships/destroy.json', $data);
+    }
 }

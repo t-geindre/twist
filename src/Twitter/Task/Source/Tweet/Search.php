@@ -1,9 +1,10 @@
 <?php
 
-namespace Twist\Twitter\Task\Source;
+namespace Twist\Twitter\Task\Source\Tweet;
 
 use Twist\Twitter\Api\Client;
 use Twist\Twitter\Task\ConfigurableInterface;
+use Twist\Twitter\Task\Source\SourceInterface;
 
 class Search implements SourceInterface, ConfigurableInterface
 {

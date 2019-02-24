@@ -3,7 +3,7 @@ tasks:
         pause: 600
         immediate_start: true
         source:
-            type: 'Search'
+            type: 'Tweet\Search'
             config: { q: 'RT follow', result_type: 'recent', count: 100, tweet_mode: 'extended', include_entities: true }
         steps:
             avoid_rt:
@@ -37,9 +37,9 @@ tasks:
                         config: { field: 'full_text', pattern: '/(fav|like)/i' }
             friendship_owner:
                 type: 'Action\Tweet\FriendshipOwner'
-                config: { follow: true, ttl: '30 DAYS' }
+                config: { follow: true }
             friendship_mentioned:
                 type: 'Action\Tweet\FriendshipMentioned'
-                config: { follow: true, ttl: '30 DAYS' }
+                config: { follow: true }
             display:
                 type: 'Action\Tweet\Display'

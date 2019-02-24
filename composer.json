@@ -15,6 +15,7 @@
         "psr/log": "^1.1",
         "doctrine/orm": "^2.6",
         "symfony/expression-language": "^4.2",
-        "gedmo/doctrine-extensions": "^2.4"
+        "gedmo/doctrine-extensions": "^2.4",
+        "wrench/wrench": "dev-master as 2.0.0"
     }
 }

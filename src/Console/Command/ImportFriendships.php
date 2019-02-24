@@ -38,7 +38,8 @@ class ImportFriendships extends Command
         Configuration $config,
         Client $client,
         SymfonyStyle $io,
-        EntityManager $em, FriendshipRepository $friendshipRepository
+        EntityManager $em,
+        FriendshipRepository $friendshipRepository
     ) {
         $this->config = $config;
         $this->client = $client;
