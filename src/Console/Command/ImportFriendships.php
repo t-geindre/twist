@@ -72,7 +72,7 @@ class ImportFriendships extends Command
             exit(1);
         }
 
-        [$username, $password] = $this->getCredentials($this->config, $this->io);
+        [$username, $password] = $this->getCredentials($this->config, $this->io, $input);
 
         $this->client->login($username, $password);
 

@@ -52,7 +52,7 @@ class TasksRunner extends Command
     {
         $this->setupTasks();
 
-        [$username, $password] = $this->getCredentials($this->config, $this->io);
+        [$username, $password] = $this->getCredentials($this->config, $this->io, $input);
 
         $this->client->login($username, $password);
 
