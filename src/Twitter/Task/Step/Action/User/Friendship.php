@@ -3,8 +3,8 @@
 namespace Twist\Twitter\Task\Step\Action\User;
 
 use Doctrine\ORM\EntityManager;
-use Twist\Twitter\Entity\FriendshipExpiration;
-use Twist\Twitter\Repository\FriendshipExpirationRepository;
+use Twist\Twitter\Entity\Friendship as FriendshipEntity;
+use Twist\Twitter\Repository\FriendshipRepository;
 use Twist\Twitter\Task\Step\Action\ActionInterface;
 use Twist\Twitter\Api\Client;
 use Twist\Twitter\Task\ConfigurableInterface;
@@ -17,16 +17,16 @@ class Friendship implements ActionInterface, ConfigurableInterface
     /** @var bool  */
     private $config = false;
 
-    /** @var FriendshipExpirationRepository */
-    private $friendshipExpiration;
+    /** @var FriendshipRepository */
+    private $friendshipRepository;
 
     /** @var EntityManager */
     private $em;
 
-    public function __construct(Client $client, FriendshipExpirationRepository $friendshipExpiration, EntityManager $em)
+    public function __construct(Client $client, FriendshipRepository $friendshipRepository, EntityManager $em)
     {
         $this->client = $client;
-        $this->friendshipExpiration = $friendshipExpiration;
+        $this->friendshipRepository = $friendshipRepository;
         $this->em = $em;
     }
 
@@ -42,6 +42,19 @@ class Friendship implements ActionInterface, ConfigurableInterface
             'follow' => ($this->config['follow'] ?? true) === false ? 'false' : null
         ]));
 
+        $friendship = $this->friendshipRepository->findOneBy(['id' => $user['id_str']]);
+
+        if (null === $friendship) {
+            $friendship = new FriendshipEntity();
+        }
+
+        $friendship->setId($user['id_str']);
+        $friendship->setExpirationDate(null);
+        $friendship->setUserObject($user);
+
+        // Set update date to force entity update
+        $friendship->setUpdatedAt(new \DateTime());
+
         if (!empty($this->config['ttl'])) {
             try {
                 $expiration = new \DateTime($this->config['ttl']);
@@ -49,19 +62,11 @@ class Friendship implements ActionInterface, ConfigurableInterface
                 throw new \InvalidArgumentException('Invalid TTL format');
             }
 
-            $friendshipExpiration = $this->friendshipExpiration->findOneBy(['id' => $user['id_str']]);
-
-            if (null === $friendshipExpiration) {
-                $friendshipExpiration = new FriendshipExpiration();
-            }
-
-            $friendshipExpiration->setId($user['id_str']);
-            $friendshipExpiration->setExpirationDate($expiration);
-            $friendshipExpiration->setUserObject($user);
-
-            $this->em->persist($friendshipExpiration);
-            $this->em->flush();
+            $friendship->setExpirationDate($expiration);
         }
+
+        $this->em->persist($friendship);
+        $this->em->flush();
 
         return $user;
     }

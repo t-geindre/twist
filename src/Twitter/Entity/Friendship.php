@@ -3,13 +3,16 @@
 namespace Twist\Twitter\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
- * @ORM\Entity(repositoryClass="Twist\Twitter\Repository\FriendshipExpirationRepository")
+ * @ORM\Entity(repositoryClass="Twist\Twitter\Repository\FriendshipRepository")
  * @ORM\Table()
  */
-class FriendshipExpiration
+class Friendship
 {
+    use TimestampableEntity;
+
     /**
      * @var string
      * @ORM\Id()
@@ -18,8 +21,8 @@ class FriendshipExpiration
     private $id;
 
     /**
-     * @var \DateTime
-     * @ORM\Column(type="datetime")
+     * @var \DateTime|null
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $expirationDate;
 
@@ -39,12 +42,12 @@ class FriendshipExpiration
         $this->id = $id;
     }
 
-    public function getExpirationDate(): \DateTime
+    public function getExpirationDate(): ?\DateTime
     {
         return $this->expirationDate;
     }
 
-    public function setExpirationDate(\DateTime $expirationDate): void
+    public function setExpirationDate(?\DateTime $expirationDate): void
     {
         $this->expirationDate = $expirationDate;
     }

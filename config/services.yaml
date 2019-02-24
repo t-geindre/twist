@@ -37,9 +37,9 @@ services:
 
     Twist\Twitter\Task\TaskFactory: ~
 
-    Twist\Twitter\Repository\FriendshipExpirationRepository:
+    Twist\Twitter\Repository\FriendshipRepository:
         factory: ['@Doctrine\ORM\EntityManager', 'getRepository']
-        arguments: ['Twist\Twitter\Entity\FriendshipExpiration']
+        arguments: ['Twist\Twitter\Entity\Friendship']
 
     # CONFIGURATION
     Symfony\Component\Yaml\Parser: ~

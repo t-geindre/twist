@@ -25,6 +25,11 @@ class Client
         ]);
     }
 
+    public function login(string $username, string $password): bool
+    {
+        return $this->browserClient->login($username, $password);
+    }
+
     /**
      * See https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets.html
      */
@@ -79,5 +84,13 @@ class Client
     public function createFavorite(array $data)
     {
         return $this->request('POST', 'favorites/create.json', $data);
+    }
+
+    /**
+     * See https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-list.html
+     */
+    public function getFriendsList(array $data)
+    {
+        return $this->request('GET', 'friends/list.json', $data);
     }
 }

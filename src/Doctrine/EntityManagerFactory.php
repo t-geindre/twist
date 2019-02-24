@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
+use Gedmo\Timestampable\TimestampableListener;
 use Twist\Configuration\Configuration;
 
 class EntityManagerFactory
@@ -23,7 +24,8 @@ class EntityManagerFactory
     public function create(array $paths, array $connection = [], bool $isDevMode = false): EntityManager
     {
         $config = Setup::createConfiguration($isDevMode);
-        $driver = new AnnotationDriver(new AnnotationReader(), $paths);
+        $annotationReader = new AnnotationReader();
+        $driver = new AnnotationDriver($annotationReader, $paths);
 
         AnnotationRegistry::registerLoader('class_exists');
         $config->setMetadataDriverImpl($driver);
@@ -35,6 +37,10 @@ class EntityManagerFactory
         if ($createSchema) {
             $this->createSchema($em);
         }
+
+        $timestampableListener = new TimestampableListener();
+        $timestampableListener->setAnnotationReader($annotationReader);
+        $em->getEventManager()->addEventSubscriber($timestampableListener);
 
         return $em;
     }

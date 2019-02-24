@@ -13,6 +13,8 @@ use Twist\Twitter\Task\TaskFactory;
 
 class TasksRunner extends Command
 {
+    use GetCredentialsTrait;
+
     protected static $defaultName = 'run';
 
     /** @var Configuration */
@@ -50,7 +52,7 @@ class TasksRunner extends Command
     {
         $this->setupTasks();
 
-        [$username, $password] = $this->getCredentials();
+        [$username, $password] = $this->getCredentials($this->config, $this->io);
 
         $this->client->login($username, $password);
 
@@ -74,17 +76,5 @@ class TasksRunner extends Command
         }
     }
 
-    protected function getCredentials(): array
-    {
-        do {
-            $configUserName = $this->config->get('username');
-            $username = $this->io->ask('Username', $configUserName);
-        } while (empty(trim($username)));
 
-        $this->config->set('username', $username);
-
-        $password = $this->io->askHidden('Password (hidden, never stored)');
-
-        return [$username, $password];
-    }
 }
