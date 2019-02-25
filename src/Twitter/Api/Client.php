@@ -101,4 +101,12 @@ class Client
     {
         return $this->request('POST', 'friendships/destroy.json', $data);
     }
+
+    /**
+     * See https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference/get-lists-statuses
+     */
+    public function getListStatuses(array $data)
+    {
+        return $this->request('GET', 'lists/statuses.json', $data);
+    }
 }
