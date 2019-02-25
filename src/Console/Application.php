@@ -58,6 +58,8 @@ class Application extends BaseApplication
         $this->container = new ContainerBuilder();
         $this->container->setParameter('root_dir', $this->rootDir);
 
+        (new YamlFileLoader($this->container, new FileLocator($this->rootDir.'config')))->load('services.yaml');
+
         $this->container->setParameter(
             'browser.headless',
             !$this->input->hasParameterOption(['--no-headless'], true)
@@ -69,8 +71,6 @@ class Application extends BaseApplication
                 $this->input->getParameterOption(['--configuration-file', '-c'])
             );
         }
-
-        (new YamlFileLoader($this->container, new FileLocator($this->rootDir.'config')))->load('services.yaml');
 
         $this->container->compile(true);
 
