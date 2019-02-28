@@ -21,8 +21,8 @@ class Task implements TaskInterface
     /** @var int */
     private $pauseDuration;
 
-    /** @var bool */
-    private $immediateStart;
+    /** @var int */
+    private $startDelay;
 
     /** @var TaskFollowerInterface */
     private $taskFollower;
@@ -36,19 +36,19 @@ class Task implements TaskInterface
         string $name,
         array $steps,
         int $pauseDuration,
-        bool $immediateStart = true
+        int $startDelay = 0
     ) {
         $this->source = $source;
         $this->steps = $steps;
         $this->pauseDuration = $pauseDuration;
-        $this->immediateStart = $immediateStart;
+        $this->startDelay = $startDelay;
         $this->taskFollower = $taskFollower;
         $this->name = $name;
     }
 
-    public function startImmediately(): bool
+    public function getStartDelay(): int
     {
-        return $this->immediateStart;
+        return $this->startDelay;
     }
 
     public function getPauseDuration(): int
@@ -81,6 +81,9 @@ class Task implements TaskInterface
 
                 if ($step instanceof ActionInterface) {
                     $item = $step->execute($item);
+                    if (null === $item) {
+                        continue 2;
+                    }
                 }
             }
         }

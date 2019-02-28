@@ -41,6 +41,8 @@ class Configuration
         $this->serializer = $serializer;
         $this->storagePath = $storagePath ?? $this->getDefaultStoragePath();
         $this->logger = $logger;
+
+        $this->createStoragePath();
     }
 
     public function get(string $key, $default = null)
@@ -91,11 +93,6 @@ class Configuration
     public function persist(): void
     {
         try {
-            $dir = dirname($this->storagePath);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0777, true);
-            }
-
             file_put_contents($this->storagePath, $this->serializer->serialize($this->config, 'yaml'));
 
             $this->logger->info(sprintf('Configuration saved in %s', $this->storagePath));
@@ -142,6 +139,19 @@ class Configuration
 
     protected function getDefaultStoragePath(): string
     {
-        return ($_SERVER['HOME'] ?? ($_SERVER['HOMEDRIVE'].'/'.$_SERVER['HOMEPATH'])).'/.twitter/config.yaml';
+        return ($_SERVER['HOME'] ?? ($_SERVER['HOMEDRIVE'].'/'.$_SERVER['HOMEPATH'])).'/.twist/config.yaml';
+    }
+
+    protected function createStoragePath()
+    {
+        $dir = dirname($this->storagePath);
+
+        if (!is_dir($dir)) {
+            try {
+                mkdir($dir, 0777, true);
+            } catch (\Throwable $e) {
+                $this->logger->warning('Unable to create configuration storage directory');
+            }
+        }
     }
 }

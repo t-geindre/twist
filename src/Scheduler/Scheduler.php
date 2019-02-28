@@ -28,7 +28,7 @@ class Scheduler
     public function addTask(TaskInterface $task)
     {
         $this->tasks[] = [
-            'pause' => $task->startImmediately() ? 0 : $task->getPauseDuration(),
+            'pause' => $task->getStartDelay(),
             'task' => $task
         ];
     }

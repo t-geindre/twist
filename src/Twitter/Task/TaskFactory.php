@@ -40,7 +40,7 @@ class TaskFactory
                 $config['steps']
             ),
             (int) ($config['pause'] ?? 0),
-            (bool) ($config['immediate_start'] ?? true)
+            (int) ($config['start_delay'] ?? 0)
         );
     }
 

@@ -5,7 +5,7 @@ namespace Twist\Twitter\Task\Step\Action\Tweet;
 use Twist\Twitter\Task\Step\Action\ActionInterface;
 use Psr\Log\LoggerInterface;
 
-class RetrieveOriginalTweet implements ActionInterface
+class GetRetweetedStatus implements ActionInterface
 {
     /** @var LoggerInterface */
     private $logger;
