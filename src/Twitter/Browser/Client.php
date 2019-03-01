@@ -107,6 +107,7 @@ class Client
                 usleep(100000); // 100ms
                 continue;
             }
+            break;
         }
 
         if ($result['status'] === 'failed') {
