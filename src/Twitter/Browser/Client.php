@@ -101,10 +101,13 @@ class Client
             '.json_encode($settings).'
         )');
 
-        do {
-            usleep(100000); // 100ms
+        for(;;) {
             $result = $this->page->evaluate('twist.getRequestResult('.json_encode($uid).')')->getReturnValue();
-        } while ($result['status'] === 'pending');
+            if ($result['status'] === 'pending') {
+                usleep(100000); // 100ms
+                continue;
+            }
+        }
 
         if ($result['status'] === 'failed') {
             throw new \RuntimeException(sprintf(

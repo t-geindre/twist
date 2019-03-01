@@ -117,22 +117,26 @@ class Configuration
         return $this->storagePath;
     }
 
-    protected function resolveParameters(array $config): array
+    protected function resolveParameters(array $config, bool $isRoot = true): array
     {
-        foreach ($config as $key => $entry) {
-            if ($key === 'parameters') {
-                continue;
-            }
+        do {
+            $replaced = 0;
+            foreach ($config as $key => $entry) {
+                if ($key === 'parameters' && $isRoot) {
+                    continue;
+                }
 
-            if (is_array($entry)) {
-                $config[$key] = $this->resolveParameters($entry);
-                continue;
-            }
+                if (is_array($entry)) {
+                    $config[$key] = $this->resolveParameters($entry, false);
+                    continue;
+                }
 
-            if (preg_match('/%([a-z\._-]+)%/i', $entry, $matches)) {
-                $config[$key] = $this->getParameter($matches[1]);
+                if (preg_match('/%([a-z\._-]+)%/i', $entry, $matches)) {
+                    $config[$key] = $this->getParameter($matches[1]);
+                    $replaced++;
+                }
             }
-        }
+        } while ($replaced > 0);
 
         return $config;
     }
