@@ -35,16 +35,16 @@ class LimitTest extends TestCase
         $testedInstance = new Limit($clock->reveal());
         $testedInstance->configure(['limit' => 1, 'delay' => $delay]);
 
-        $clock->getNow()->willReturn($date);
+        $clock->getNow()->willReturn(\DateTimeImmutable::createFromMutable($date));
 
         $this->assertEquals(true, $testedInstance->satisfy([]));
         $this->assertEquals(false, $testedInstance->satisfy([]));
 
-        $clock->getNow()->willReturn($date->add($ellapsedInterval));
+        $clock->getNow()->willReturn(\DateTimeImmutable::createFromMutable($date->add($ellapsedInterval)));
 
         $this->assertEquals(false, $testedInstance->satisfy([]));
 
-        $clock->getNow()->willReturn($date->add($flushInterval));
+        $clock->getNow()->willReturn(\DateTimeImmutable::createFromMutable($date->add($flushInterval)));
 
         $this->assertEquals(true, $testedInstance->satisfy([]));
     }

@@ -75,7 +75,7 @@ class Limit implements ConditionInterface, ConfigurableInterface, ResetableInter
         if ($this->delay) {
             $this->expires = array_filter(
                 $this->expires,
-                function (\DateTime $expire) {
+                function (\DateTimeInterface $expire) {
                     return $expire > $this->clock->getNow();
                 }
             );

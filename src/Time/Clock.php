@@ -4,7 +4,7 @@ namespace Twist\Time;
 
 class Clock
 {
-    public function getNow(): \DateTime
+    public function getNow(): \DateTimeImmutable
     {
         return new \DateTimeImmutable();
     }
