@@ -1,0 +1,12 @@
+<?php
+
+$config = PhpCsFixer\Config::create();
+$config->setRules([
+    '@PSR2' => true,
+    'array_syntax' => ['syntax' => 'short'],
+]);
+$config->getFinder()->in([
+    __DIR__.'/src',
+    __DIR__.'/tests',
+]);
+return $config;
