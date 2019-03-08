@@ -2,6 +2,7 @@
 
 namespace Twist\Twitter\Task;
 
+use Doctrine\ORM\EntityManager;
 use Twist\Scheduler\TaskFollowerInterface;
 use Twist\Twitter\Task\Source\SourceInterface;
 use Twist\Twitter\Task\Step\Action\ActionInterface;
@@ -21,10 +22,14 @@ class TaskFactory
     /** @var TaskFollowerInterface */
     private $taskFollower;
 
-    public function __construct(ContainerInterface $container, TaskFollowerInterface $taskFollower)
+    /** @var EntityManager */
+    private $em;
+
+    public function __construct(ContainerInterface $container, TaskFollowerInterface $taskFollower, EntityManager $em)
     {
         $this->container = $container;
         $this->taskFollower = $taskFollower;
+        $this->em = $em;
     }
 
     public function create(array $config): Task
@@ -35,6 +40,7 @@ class TaskFactory
                 $config['source']['type'],
                 $config['source']['config'] ?? []
             ),
+            $this->em,
             $config['name'],
             $this->getSteps(
                 $config['steps']

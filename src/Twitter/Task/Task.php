@@ -2,6 +2,7 @@
 
 namespace Twist\Twitter\Task;
 
+use Doctrine\ORM\EntityManager;
 use Twist\Scheduler\TaskFollowerInterface;
 use Twist\Scheduler\TaskInterface;
 use Twist\Twitter\Task\Source\SourceInterface;
@@ -30,9 +31,13 @@ class Task implements TaskInterface
     /** @var string */
     private $name;
 
+    /** @var EntityManager */
+    private $em;
+
     public function __construct(
         TaskFollowerInterface $taskFollower,
         SourceInterface $source,
+        EntityManager $em,
         string $name,
         array $steps,
         int $pauseDuration,
@@ -44,6 +49,7 @@ class Task implements TaskInterface
         $this->startDelay = $startDelay;
         $this->taskFollower = $taskFollower;
         $this->name = $name;
+        $this->em = $em;
     }
 
     public function getStartDelay(): int
@@ -89,5 +95,9 @@ class Task implements TaskInterface
         }
 
         $this->taskFollower->ends();
+
+        // Since some steps might use EM
+        // it has to be cleared after each task
+        $this->em->clear();
     }
 }
