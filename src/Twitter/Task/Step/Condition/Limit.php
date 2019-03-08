@@ -14,7 +14,7 @@ class Limit implements ConditionInterface, ConfigurableInterface, ResetableInter
     /** @var int */
     private $limit;
 
-    /** @var \DateTime[] */
+    /** @var \DateTimeImmutable[] */
     private $expires = [];
 
     /** @var Clock */

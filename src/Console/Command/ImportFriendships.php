@@ -59,17 +59,22 @@ class ImportFriendships extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var string $argStartDate */
+        $argStartDate = $input->getArgument('start-date');
+        /** @var string $argDateInterval */
+        $argDateInterval = $input->getArgument('date-interval');
+
         try {
-            $date = new \DateTime($input->getArgument('start-date'));
+            $date = new \DateTime($argStartDate);
         } catch (\Throwable $e) {
-            $this->io->error(sprintf('Invalid date format "%s"', $input->getArgument('start-date')));
+            $this->io->error(sprintf('Invalid date format "%s"', $argStartDate));
             exit(1);
         }
 
         try {
-            $dateInterval = new \DateInterval($input->getArgument('date-interval'));
+            $dateInterval = new \DateInterval($argDateInterval);
         } catch (\Throwable $e) {
-            $this->io->error(sprintf('Invalid time interval format "%s"', $input->getArgument('date-interval')));
+            $this->io->error(sprintf('Invalid time interval format "%s"', $argDateInterval));
             exit(1);
         }
 

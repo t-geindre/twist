@@ -14,7 +14,7 @@ class Friendship
     use TimestampableEntity;
 
     /**
-     * @var string
+     * @var int
      * @ORM\Id()
      * @ORM\Column(type="string")
      */
@@ -32,7 +32,7 @@ class Friendship
      */
     private $userObject;
 
-    public function getId(): string
+    public function getId(): int
     {
         return $this->id;
     }
@@ -54,11 +54,17 @@ class Friendship
 
     public function getUserObject(): array
     {
-        return json_decode($this->userObject, JSON_OBJECT_AS_ARRAY);
+        return json_decode($this->userObject, true);
     }
 
     public function setUserObject(array $userObject): void
     {
-        $this->userObject = json_encode($userObject);
+        $userObject = json_encode($userObject);
+
+        if (false === $userObject) {
+            throw new \InvalidArgumentException('Malformed user object');
+        }
+
+        $this->userObject = $userObject;
     }
 }

@@ -72,7 +72,7 @@ class Scheduler
             if ($task['pause'] === 0) {
                 try {
                     $task['task']->run();
-                } catch(\Throwable $e) {
+                } catch (\Throwable $e) {
                     if (!$this->handleException) {
                         throw $e;
                     }

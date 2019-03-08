@@ -124,4 +124,3 @@ class FieldComparison implements ConditionInterface, ConfigurableInterface
         ];
     }
 }
-

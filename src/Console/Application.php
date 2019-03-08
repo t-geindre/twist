@@ -10,13 +10,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Twist\Configuration\Configuration;
 
 class Application extends BaseApplication
 {
     const COMMAND_TAG = 'twist.command';
 
-    /** @var ContainerInterface */
+    /** @var ContainerBuilder */
     private $container;
 
     /** @var InputInterface */
@@ -77,7 +76,6 @@ class Application extends BaseApplication
         $this->container->set(ContainerInterface::class, $this->container);
         $this->container->set(InputInterface::class, $this->input);
         $this->container->set(OutputInterface::class, $this->output);
-
     }
 
     protected function registerCommands()
@@ -85,7 +83,7 @@ class Application extends BaseApplication
         $commandServices = $this->container->findTaggedServiceIds(self::COMMAND_TAG);
 
         foreach ($commandServices as $serviceId => $tags) {
-            /** @var $command \Symfony\Component\Console\Command\Command **/
+            /** @var \Symfony\Component\Console\Command\Command $command */
             $command = $this->container->get($serviceId);
             $this->add($command);
         }

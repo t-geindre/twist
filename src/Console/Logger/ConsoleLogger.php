@@ -37,9 +37,8 @@ class ConsoleLogger extends AbstractLogger
     /** @var SymfonyStyle */
     private $io;
 
-    public function __construct(OutputInterface $output, SymfonyStyle $io, string $verbosityMinLevel = 'info')
+    public function __construct(OutputInterface $output, SymfonyStyle $io)
     {
-
         $this->output = $output;
         $this->io = $io;
     }
@@ -47,7 +46,10 @@ class ConsoleLogger extends AbstractLogger
     public function log($level, $message, array $context = [])
     {
         if ($this->output->getVerbosity() >= self::VERBOSITY_LEVEL_MAP[$level]) {
-            call_user_func([$this->io, self::FORMAT_LEVEL_MAP[$level]], $message);
+            $callable = [$this->io, self::FORMAT_LEVEL_MAP[$level]];
+            if (is_callable($callable)) {
+                call_user_func($callable, $message);
+            }
         }
     }
 }

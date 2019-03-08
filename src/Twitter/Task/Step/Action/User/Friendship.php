@@ -14,8 +14,8 @@ class Friendship implements ActionInterface, ConfigurableInterface
     /** @var Client */
     private $client;
 
-    /** @var bool  */
-    private $config = false;
+    /** @var array */
+    private $config;
 
     /** @var FriendshipRepository */
     private $friendshipRepository;
@@ -42,6 +42,7 @@ class Friendship implements ActionInterface, ConfigurableInterface
             'follow' => ($this->config['follow'] ?? true) === false ? 'false' : null
         ]));
 
+        /** @var FriendshipEntity|null $friendship */
         $friendship = $this->friendshipRepository->findOneBy(['id' => $user['id_str']]);
 
         if (null === $friendship) {

@@ -89,14 +89,15 @@ class Client
         }
 
         $settings = array_merge_recursive($settings, [
-            'headers' => array_merge($this->getRequestHeaders(), ['x-csrf-token' => $this->getCsrfToken()]),
+            'headers' => array_merge($this->getRequestHeaders() ?? [], ['x-csrf-token' => $this->getCsrfToken()]),
             'xhrFields' => ['withCredentials' => true]
         ]);
 
         $uid = uniqid();
         $this->evaluate('twist.sendRequest('.json_encode($uid).', '.json_encode($settings).')');
 
-        for(;;) {
+        $result = [];
+        for (;;) {
             $result = $this->evaluate('twist.getRequestResult('.json_encode($uid).')')->getReturnValue();
             if ($result['status'] === 'pending') {
                 usleep(100000); // 100ms
@@ -105,15 +106,15 @@ class Client
             break;
         }
 
-        if ($result['status'] === 'failed') {
+        if (($result['status'] ?? 'failed') === 'failed') {
             throw new \RuntimeException(sprintf(
                 'An error occurred while requesting "%s", status: "%s"',
                 $settings['url'] ?? 'none',
-                $result['code']
+                $result['code'] ?? 0
             ));
         }
 
-        return $result['data'];
+        return $result['data'] ?? [];
     }
 
     public function evaluate(string $script, bool $handleException = true): PageEvaluation

@@ -23,7 +23,7 @@ class AddSourceTags implements ActionInterface, ConfigurableInterface
             $list = $remove['list'] ?? [];
             $mode = $remove['mode'] ?? 'contains';
 
-            $hashtags = array_filter($hashtags, function(string $tag) use ($list, $mode) {
+            $hashtags = array_filter($hashtags, function (string $tag) use ($list, $mode) {
                 $tag = strtolower($tag);
 
                 foreach ($list as $word) {

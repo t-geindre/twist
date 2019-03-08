@@ -21,7 +21,7 @@ class AddPart implements ActionInterface, ConfigurableInterface
 
             $parts = array_values(array_filter(
                 $parts,
-                    function(string $part) use ($usedWords, $minLength) {
+                function (string $part) use ($usedWords, $minLength) {
                     foreach ($this->getWords($part, $minLength) as $word) {
                         if (in_array($word, $usedWords)) {
                             return false;
@@ -58,14 +58,17 @@ class AddPart implements ActionInterface, ConfigurableInterface
 
     protected function getWords(string $sentence, int $minLength): array
     {
-        return array_map(
-            'strtolower',
-            array_filter(
-                preg_split('/ |\'|-|,/', trim($sentence)),
-                function (string $word) use ($minLength) {
-                    return mb_strlen($word) >= $minLength;
-                }
-            )
-        );
+        $words = preg_split('/ |\'|-|,/', trim($sentence));
+
+        if (false === $words) {
+            return [];
+        }
+
+        return array_map('strtolower', array_filter(
+            $words,
+            function (string $word) use ($minLength) {
+                return mb_strlen($word) >= $minLength;
+            }
+        ));
     }
 }
