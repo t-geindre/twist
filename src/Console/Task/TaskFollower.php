@@ -12,8 +12,8 @@ class TaskFollower implements TaskFollowerInterface
     /** @var SymfonyStyle */
     private $io;
 
-    /** @var ProgressBar */
-    private $progressBar;
+    /** @var ?ProgressBar */
+    private $progressBar = null;
 
     public function __construct(SymfonyStyle $io)
     {
@@ -30,28 +30,40 @@ class TaskFollower implements TaskFollowerInterface
 
     public function advance(int $steps = 1)
     {
-        $this->progressBar->advance($steps);
+        if (null !== $this->progressBar) {
+            $this->progressBar->advance($steps);
+        }
     }
 
     public function ends()
     {
-        $this->progressBar->clear();
-        $this->io->writeln(' ');
+        if (null !== $this->progressBar) {
+            $this->progressBar->clear();
+            $this->io->writeln(' ');
+
+            $this->progressBar = null;
+        }
     }
 
     public function setSteps(int $steps)
     {
-        $this->progressBar->setMaxSteps($steps);
+        if (null !== $this->progressBar) {
+            $this->progressBar->setMaxSteps($steps);
+        }
     }
 
     public function hide()
     {
-        $this->progressBar->clear();
+        if (null !== $this->progressBar) {
+            $this->progressBar->clear();
+        }
     }
 
     public function show()
     {
-        $this->progressBar->display();
+        if (null !== $this->progressBar) {
+            $this->progressBar->display();
+        }
     }
 
     protected function formatName(string $name): string

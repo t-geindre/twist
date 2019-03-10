@@ -20,14 +20,11 @@ services:
     HeadlessChromium\BrowserFactory:
         arguments: ['chromium-browser']
 
-    HeadlessChromium\Browser:
-        factory: ['@HeadlessChromium\BrowserFactory', 'createBrowser']
-        arguments: [headless: '%browser.headless%']
-
     Twist\Twitter\Browser\Client:
         arguments:
             $headersInterceptorScript: '%root_dir%/src/Twitter/Browser/Resource/headers-interceptor.js'
             $requestProxyScript: '%root_dir%/src/Twitter/Browser/Resource/request-proxy.js'
+            $browserOptions: { headless: '%browser.headless%' }
 
     Twist\Twitter\Task\:
         resource: '../src/Twitter/Task/*'

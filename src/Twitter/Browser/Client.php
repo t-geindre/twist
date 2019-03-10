@@ -3,6 +3,7 @@
 namespace Twist\Twitter\Browser;
 
 use HeadlessChromium\Browser;
+use HeadlessChromium\BrowserFactory;
 use HeadlessChromium\Exception\JavascriptException;
 use HeadlessChromium\Exception\OperationTimedOut;
 use HeadlessChromium\Page;
@@ -14,9 +15,6 @@ class Client
     const LOGIN_URL = 'https://twitter.com/login';
     const IDLE_URL = 'https://twitter.com/search-home';
 
-    /** @var Page */
-    private $page;
-
     /** @var array|null */
     private $requestHeaders;
 
@@ -26,36 +24,52 @@ class Client
     /** @var LoggerInterface */
     private $logger;
 
-    /** @var int */
-    private $requestsCount = 0;
-
-    /** @var Browser */
-    private $browser;
-
     /** @var string */
     private $headersInterceptorScript;
 
     /** @var string */
     private $requestProxyScript;
 
+    /** @var array */
+    private $browserOptions;
+
+    /** @var BrowserFactory */
+    private $browserFactory;
+
+    /** @var Browser */
+    private $browser;
+
+    /** @var Page */
+    private $page;
+
+    /** @var strng */
+    private $username;
+
+    /** @var string */
+    private $password;
+
     public function __construct(
-        Browser $browser,
+        BrowserFactory $browserFactory,
         LoggerInterface $logger,
         string $headersInterceptorScript,
-        string $requestProxyScript
+        string $requestProxyScript,
+        array $browserOptions
     ) {
         $this->logger = $logger;
-        $this->browser = $browser;
         $this->headersInterceptorScript = $headersInterceptorScript;
         $this->requestProxyScript = $requestProxyScript;
-
-        $this->createPage();
+        $this->browserFactory = $browserFactory;
+        $this->browserOptions = $browserOptions;
     }
 
     public function login(string $username, string $password): bool
     {
-        $this->logger->info('Logging in Twitter');
+        $this->start();
 
+        $this->username = $username;
+        $this->password = $password;
+
+        $this->logger->info('Logging in Twitter');
         $this->page->navigate(self::LOGIN_URL)->waitForNavigation();
 
         if (strpos($this->page->getCurrentUrl(), self::LOGIN_URL) !== false) {
@@ -73,20 +87,17 @@ class Client
         }
 
         $this->fetchRequestHeaders();
-        $this->reloadPage();
+        $this->page->navigate(self::IDLE_URL)->waitForNavigation();
+        sleep(1); // Make sure the page is fully loaded todo fix this
 
         return $this->loggedIn = true;
     }
 
-    public function request(array $settings)
+    public function request(array $settings, bool $handleException = true)
     {
         $this->assertLoggedIn();
 
-        // Reload page to avoid overload
-        if ($this->requestsCount++ > 300) {
-            $this->requestsCount = 0;
-            $this->reloadPage();
-        }
+        $originalSettings = $settings; // Keep a copy in case of an error
 
         $settings = array_merge_recursive($settings, [
             'headers' => array_merge($this->getRequestHeaders() ?? [], ['x-csrf-token' => $this->getCsrfToken()]),
@@ -94,11 +105,19 @@ class Client
         ]);
 
         $uid = uniqid();
-        $this->evaluate('twist.sendRequest('.json_encode($uid).', '.json_encode($settings).')');
+        $this->evaluate('twist.sendRequest('.json_encode($uid).', '.json_encode($settings).')')->getReturnValue();
 
         $result = [];
         for (;;) {
-            $result = $this->evaluate('twist.getRequestResult('.json_encode($uid).')')->getReturnValue();
+            try {
+                $result = $this->evaluate('twist.getRequestResult('.json_encode($uid).')')->getReturnValue();
+            } catch (OperationTimedOut $e) {
+                if (!$handleException) {
+                    throw $e;
+                }
+                $this->start(true);
+                return $this->request($originalSettings);
+            }
             if ($result['status'] === 'pending') {
                 usleep(100000); // 100ms
                 continue;
@@ -117,17 +136,11 @@ class Client
         return $result['data'] ?? [];
     }
 
-    public function evaluate(string $script, bool $handleException = true): PageEvaluation
+    public function evaluate(string $script): PageEvaluation
     {
-        try {
-            return $this->page->evaluate($script);
-        } catch (OperationTimedOut $e) {
-            if ($handleException) {
-                $this->reloadPage();
-                return $this->evaluate($script, false);
-            }
-            throw $e;
-        }
+        $this->start();
+
+        return $this->page->evaluate($script);
     }
 
     public function getRequestHeaders(): ?array
@@ -152,9 +165,7 @@ class Client
     {
         $this->logger->info('Fetching API credentials');
 
-        if (null !== $this->requestHeaders) {
-            return;
-        }
+        $this->requestHeaders = null;
 
         do {
             // Scroll down until there's an API call
@@ -164,32 +175,35 @@ class Client
         } while (false === $this->requestHeaders);
     }
 
-    protected function reloadPage()
-    {
-        $url = null;
-        if (null !== $this->page) {
-            $url = $this->page->getCurrentUrl();
-            $this->page->close();
-        }
-
-        $this->createPage();
-        $this->page->navigate($url ? $url : self::IDLE_URL)->waitForNavigation();
-    }
-
-    protected function createPage(): void
-    {
-        $this->page = $this->browser->createPage();
-
-        $this->page->addPreScript(
-            file_get_contents($this->headersInterceptorScript)."\n".
-            file_get_contents($this->requestProxyScript)
-        );
-    }
-
     protected function assertLoggedIn(): void
     {
         if (!$this->loggedIn) {
             throw new \RuntimeException('Unabe to perform action: not logged in');
+        }
+    }
+
+    protected function start(bool $restart = false)
+    {
+        if (null !== $this->browser) {
+            if (false === $restart) {
+                return;
+            }
+            $this->logger->info('Closing browser');
+            $this->browser->close();
+        }
+
+        $this->logger->info('Opening new browser');
+        $this->browser = $this->browserFactory->createBrowser($this->browserOptions);
+
+        $this->page = $this->browser->createPage();
+        $this->page->addPreScript(
+            file_get_contents($this->headersInterceptorScript)."\n".
+            file_get_contents($this->requestProxyScript)
+        );
+
+        if ($this->loggedIn) {
+            $this->loggedIn = false;
+            $this->login($this->username, $this->password);
         }
     }
 }

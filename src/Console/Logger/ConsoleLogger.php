@@ -6,6 +6,7 @@ use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Twist\Console\Task\TaskFollower;
 
 class ConsoleLogger extends AbstractLogger
 {
@@ -37,19 +38,27 @@ class ConsoleLogger extends AbstractLogger
     /** @var SymfonyStyle */
     private $io;
 
-    public function __construct(OutputInterface $output, SymfonyStyle $io)
+    /** @var TaskFollower */
+    private $taskFollower;
+
+    public function __construct(OutputInterface $output, SymfonyStyle $io, TaskFollower $taskFollower)
     {
         $this->output = $output;
         $this->io = $io;
+        $this->taskFollower = $taskFollower;
     }
 
     public function log($level, $message, array $context = [])
     {
         if ($this->output->getVerbosity() >= self::VERBOSITY_LEVEL_MAP[$level]) {
+            $this->taskFollower->hide();
+
             $callable = [$this->io, self::FORMAT_LEVEL_MAP[$level]];
             if (is_callable($callable)) {
                 call_user_func($callable, $message);
             }
+
+            $this->taskFollower->show();
         }
     }
 }
