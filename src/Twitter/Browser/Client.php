@@ -42,7 +42,7 @@ class Client
     /** @var Page */
     private $page;
 
-    /** @var strng */
+    /** @var string */
     private $username;
 
     /** @var string */
