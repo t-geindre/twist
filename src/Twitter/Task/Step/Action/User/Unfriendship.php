@@ -4,6 +4,7 @@ namespace Twist\Twitter\Task\Step\Action\User;
 
 use Doctrine\ORM\EntityManager;
 use Twist\Twitter\Api\Client;
+use Twist\Twitter\Browser\Exception\RequestException;
 use Twist\Twitter\Repository\FriendshipRepository;
 use Twist\Twitter\Task\Step\Action\ActionInterface;
 
@@ -30,7 +31,14 @@ class Unfriendship implements ActionInterface
 
     public function execute(array $user): ?array
     {
-        $this->client->destroyFriendship(['user_id' => $user['id_str']]);
+        try {
+            $this->client->destroyFriendship(['user_id' => $user['id_str']]);
+        } catch (RequestException $e) {
+            if ($e->getCode() != 404) {
+                throw $e;
+            }
+            // Friendship no longer exists
+        }
 
         $friendship = $this->friendshipRepository->find($user['id_str']);
 

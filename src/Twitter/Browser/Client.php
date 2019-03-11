@@ -9,6 +9,7 @@ use HeadlessChromium\Exception\OperationTimedOut;
 use HeadlessChromium\Page;
 use HeadlessChromium\PageUtils\PageEvaluation;
 use Psr\Log\LoggerInterface;
+use Twist\Twitter\Browser\Exception\RequestException;
 
 class Client
 {
@@ -126,11 +127,11 @@ class Client
         }
 
         if (($result['status'] ?? 'failed') === 'failed') {
-            throw new \RuntimeException(sprintf(
+            throw new RequestException(sprintf(
                 'An error occurred while requesting "%s", status: "%s"',
                 $settings['url'] ?? 'none',
-                $result['code'] ?? 0
-            ));
+                $code = $result['code'] ?? 0
+            ), $code);
         }
 
         return $result['data'] ?? [];
