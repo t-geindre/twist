@@ -15,6 +15,7 @@ class Client
 {
     const LOGIN_URL = 'https://twitter.com/login';
     const IDLE_URL = 'https://twitter.com/search-home';
+    const REQUEST_POLLING_PAUSE = '100'; // ms
 
     /** @var array|null */
     private $requestHeaders;
@@ -94,21 +95,26 @@ class Client
         return $this->loggedIn = true;
     }
 
-    public function request(array $settings, bool $handleException = true)
+    public function request(array $settings, int $timeout = 3, bool $handleException = true)
     {
         $this->assertLoggedIn();
-
-        $originalSettings = $settings; // Keep a copy in case of an error
 
         $settings = array_merge_recursive($settings, [
             'headers' => array_merge($this->getRequestHeaders() ?? [], ['x-csrf-token' => $this->getCsrfToken()]),
             'xhrFields' => ['withCredentials' => true]
         ]);
 
-        $uid = uniqid();
-        $this->evaluate('twist.sendRequest('.json_encode($uid).', '.json_encode($settings).')')->getReturnValue();
+        return $this->doRequest($settings, $timeout, $handleException)['data'] ?? [];
+    }
 
-        $result = [];
+    protected function doRequest(array $settings, int $timeout, bool $handleException)
+    {
+        $uid = uniqid();
+        $this->evaluate('twist.sendRequest('.json_encode($uid).', '.json_encode($settings).')');
+
+        $result = null;
+        $ellapsedTime = 0;
+
         for (;;) {
             try {
                 $result = $this->evaluate('twist.getRequestResult('.json_encode($uid).')')->getReturnValue();
@@ -117,12 +123,24 @@ class Client
                     throw $e;
                 }
                 $this->start(true);
-                return $this->request($originalSettings);
+
+                return $this->doRequest($settings, $timeout, false);
             }
+
             if ($result['status'] === 'pending') {
-                usleep(100000); // 100ms
+                usleep(self::REQUEST_POLLING_PAUSE * 1000);
+
+                $ellapsedTime += self::REQUEST_POLLING_PAUSE;
+                if (($ellapsedTime / 1000) >= $timeout) {
+                    throw new RequestException(sprintf(
+                        'An error occurred while requesting "%s", timeout reached',
+                        $settings['url'] ?? 'none'
+                    ));
+                }
+
                 continue;
             }
+
             break;
         }
 
@@ -134,7 +152,7 @@ class Client
             ), $code);
         }
 
-        return $result['data'] ?? [];
+        return $result;
     }
 
     public function evaluate(string $script): PageEvaluation
