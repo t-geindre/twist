@@ -6,7 +6,7 @@ use Psr\Log\LoggerInterface;
 
 class Scheduler
 {
-    /** @var array */
+    /** @var TaskHandler[] */
     private $tasks = [];
 
     /** @var LoggerInterface */
@@ -27,23 +27,29 @@ class Scheduler
 
     public function addTask(TaskInterface $task)
     {
-        $this->tasks[] = [
-            'pause' => $task->getStartDelay(),
-            'task' => $task
-        ];
+        $this->tasks[] = new TaskHandler($task);
     }
 
     public function run()
     {
+        if (count($this->tasks) === 0) {
+            throw new \RuntimeException('There is no task to run');
+        }
+
         while (true) {
-            $this->runTasks();
+            $this->doRun();
             $this->pause();
         }
     }
 
     protected function pause()
     {
-        $duration = min(array_column($this->tasks, 'pause'));
+        $duration = min(array_map(
+            function (TaskHandler $task) {
+                return $task->getRemainingPause();
+            },
+            $this->tasks
+        ));
 
         $this->taskFollower->start(
             sprintf('%d second(s) pause before executing next task', $duration),
@@ -57,21 +63,17 @@ class Scheduler
 
         $this->taskFollower->ends();
 
-        foreach ($this->tasks as &$task) {
-            $task['pause'] -= $duration;
+        foreach ($this->tasks as $task) {
+            $task->decreasePause($duration);
         }
     }
 
-    protected function runTasks()
+    protected function doRun()
     {
-        if (count($this->tasks) === 0) {
-            throw new \RuntimeException('There is no task to run');
-        }
-
-        foreach ($this->tasks as &$task) {
-            if ($task['pause'] === 0) {
+        foreach ($this->tasks as $task) {
+            if ($task->getRemainingPause() === 0) {
                 try {
-                    $task['task']->run();
+                    $task->run();
                 } catch (\Throwable $e) {
                     if (!$this->handleException) {
                         throw $e;
@@ -80,7 +82,6 @@ class Scheduler
                     $this->logger->error($e->getMessage());
                     $this->logger->warning('Task stopped, next run scheduled');
                 }
-                $task['pause'] = $task['task']->getPauseDuration();
             }
         }
     }

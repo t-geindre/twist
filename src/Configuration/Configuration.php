@@ -67,8 +67,6 @@ class Configuration
             return;
         }
 
-        $this->isLoaded = true;
-
         $file = $this->storagePath;
 
         if (!file_exists($file)) {
@@ -78,6 +76,7 @@ class Configuration
             $file = $this->defaultConfigFile;
         }
 
+        $this->isLoaded = true;
         $this->config = $this->parser->parseFile($file);
         $this->config = $this->resolveParameters($this->config);
 

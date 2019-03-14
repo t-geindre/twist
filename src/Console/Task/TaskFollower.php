@@ -9,59 +9,63 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TaskFollower implements TaskFollowerInterface
 {
     const PROGRESSBAR_FORMAT = 'taskfollower_format';
+
     /** @var SymfonyStyle */
     private $io;
 
-    /** @var ?ProgressBar */
+    /** @var bool */
+    private $isRunning = false;
+
+    /** @var ProgressBar */
     private $progressBar = null;
 
     public function __construct(SymfonyStyle $io)
     {
         $this->io = $io;
+        $this->progressBar = $this->io->createProgressBar();
     }
 
     public function start(string $name, int $steps)
     {
+        $this->isRunning = true;
         $this->io->writeln(sprintf(' <comment>%s</comment>', $this->formatName($name)));
-        $this->progressBar = $this->io->createProgressBar($steps);
-        $this->progressBar->start();
+        $this->progressBar->start($steps);
     }
 
 
     public function advance(int $steps = 1)
     {
-        if (null !== $this->progressBar) {
+        if ($this->isRunning) {
             $this->progressBar->advance($steps);
         }
     }
 
     public function ends()
     {
-        if (null !== $this->progressBar) {
+        if ($this->isRunning) {
+            $this->isRunning = false;
             $this->progressBar->clear();
             $this->io->writeln(' ');
-
-            $this->progressBar = null;
         }
     }
 
     public function setSteps(int $steps)
     {
-        if (null !== $this->progressBar) {
+        if ($this->isRunning) {
             $this->progressBar->setMaxSteps($steps);
         }
     }
 
     public function hide()
     {
-        if (null !== $this->progressBar) {
+        if ($this->isRunning) {
             $this->progressBar->clear();
         }
     }
 
     public function show()
     {
-        if (null !== $this->progressBar) {
+        if ($this->isRunning) {
             $this->progressBar->display();
         }
     }

@@ -81,10 +81,10 @@ class Application extends BaseApplication
     protected function registerCommands()
     {
         $commandServices = $this->container->findTaggedServiceIds(self::COMMAND_TAG);
-
         foreach ($commandServices as $serviceId => $tags) {
             /** @var \Symfony\Component\Console\Command\Command $command */
             $command = $this->container->get($serviceId);
+
             $this->add($command);
         }
     }
