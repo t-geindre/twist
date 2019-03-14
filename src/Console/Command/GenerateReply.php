@@ -2,14 +2,14 @@
 
 namespace Twist\Console\Command;
 
-use Twist\Configuration\Configuration;
-use Twist\Twitter\Task\Step\Action\ActionInterface;
-use Twist\Twitter\Task\TaskFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Twist\Configuration\Configuration;
+use Twist\Twitter\Task\Step\Action\ActionInterface;
+use Twist\Twitter\Task\Step\StepFactory;
 
 class GenerateReply extends Command
 {
@@ -18,15 +18,15 @@ class GenerateReply extends Command
     /** @var Configuration */
     private $configuration;
 
-    /** @var TaskFactory */
-    private $taskFactory;
+    /** @var StepFactory */
+    private $stepFactory;
 
-    public function __construct(Configuration $configuration, TaskFactory $taskFactory)
+    public function __construct(Configuration $configuration, StepFactory $stepFactory)
     {
         $this->configuration = $configuration;
 
         parent::__construct();
-        $this->taskFactory = $taskFactory;
+        $this->stepFactory = $stepFactory;
     }
 
     protected function configure()
@@ -82,7 +82,7 @@ class GenerateReply extends Command
         );
 
         /** @var ActionInterface[] $steps */
-        $steps = $this->taskFactory->getSteps($steps);
+        $steps = $this->stepFactory->createMultiple($steps);
 
         $count = (int) $count;
 

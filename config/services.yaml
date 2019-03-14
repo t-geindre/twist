@@ -26,11 +26,21 @@ services:
             $requestProxyScript: '%root_dir%/src/Twitter/Browser/Resource/request-proxy.js'
             $browserOptions: { headless: '%browser.headless%' }
 
-    Twist\Twitter\Task\:
-        resource: '../src/Twitter/Task/*'
-        exclude:  '../src/Twitter/Task/{TaskFactory.php,Task.php,Step/Action/ConditionalAction.php}'
+    Twist\Twitter\Task\Source\:
+        resource: '../src/Twitter/Task/Source/*'
+        exclude:  '../src/Twitter/Task/Source/{SourceFactory.php}'
         shared: false
         public: true
+
+    Twist\Twitter\Task\Source\SourceFactory: ~
+
+    Twist\Twitter\Task\Step\:
+        resource: '../src/Twitter/Task/Step/*'
+        exclude:  '../src/Twitter/Task/Step/{StepFactory.php,Action/ConditionalAction.php}'
+        shared: false
+        public: true
+
+    Twist\Twitter\Task\Step\StepFactory: ~
 
     Twist\Twitter\Task\TaskFactory: ~
 

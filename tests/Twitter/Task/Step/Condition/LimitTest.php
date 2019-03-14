@@ -1,6 +1,6 @@
 <?php
 
-namespace Twitter\Task\Step\Condition;
+namespace Twist\Tests\Twitter\Task\Step\Condition;
 
 use PHPUnit\Framework\TestCase;
 use Twist\Time\Clock;

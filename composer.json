@@ -5,6 +5,11 @@
             "Twist\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Twist\\Tests\\": "tests/"
+        }
+    },
     "require": {
         "symfony/dependency-injection": "^4.2",
         "symfony/config": "^4.2",

@@ -52,6 +52,11 @@ class Task implements TaskInterface
         $this->em = $em;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     public function getStartDelay(): int
     {
         return $this->startDelay;
