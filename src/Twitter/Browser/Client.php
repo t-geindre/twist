@@ -15,6 +15,7 @@ class Client
 {
     const LOGIN_URL = 'https://twitter.com/login';
     const IDLE_URL = 'https://twitter.com/search-home';
+    const LOCKED_URL = 'https://twitter.com/account';
     const REQUEST_POLLING_PAUSE = '100'; // ms
 
     /** @var array|null */
@@ -223,6 +224,13 @@ class Client
         if ($this->loggedIn) {
             $this->loggedIn = false;
             $this->login($this->username, $this->password);
+        }
+    }
+
+    protected function assertNotLocked()
+    {
+        if (strpos($this->page->getCurrentUrl(), slef::LOCKED_URL) === 0) {
+            // account locked
         }
     }
 }

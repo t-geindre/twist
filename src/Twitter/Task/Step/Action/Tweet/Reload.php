@@ -30,11 +30,12 @@ class Reload implements ActionInterface, ConfigurableInterface
                 $this->config
             ));
         } catch (RequestException $e) {
-            if ($e->getCode() != 404) {
+            if (!in_array($e->getCode(), [
+                '404', // Tweet removed
+                '401', // Blocked by tweet owner
+            ])) {
                 throw $e;
             }
-            // Tweet might have been deleted
-            // Especially if search API is the source (it's cached)
         }
 
         return $status;
