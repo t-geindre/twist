@@ -1,3 +1,3 @@
 # Twist
 
-Fully configurable Twitter bot \o/
+Fully configurable Twitter bot \o/ !
