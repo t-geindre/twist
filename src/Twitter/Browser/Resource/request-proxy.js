@@ -6,19 +6,25 @@ var twist = twist || {};
     window.twist.sendRequest = function(uid, settings) {
         requests[uid] = {status: 'pending', data: null};
 
-        window.jQuery.ajax(settings).then(
-            (data, status) => {
-                requests[uid] = {data, status};
-            },
-            (jqXHR, textStatus) => {
-                requests[uid] = {
-                    status: 'failed',
-                    error: textStatus,
-                    data: jqXHR.responseText,
-                    code: jqXHR.status
-                }
-            }
-        );
+        // if (settings.data) {
+        //     settings.body = new FormData();
+        //     Object.keys(settings.data).forEach(
+        //         key => settings.body.append(key, settings.data[key])
+        //     );
+        // }
+
+        fetch(settings.url, settings)
+            .then(response => {
+                response.json().then(json => {
+                    requests[uid] = {
+                        status: response.ok ? 'success' : 'failed',
+                        data: json,
+                        statusText: response.statusText,
+                        code: response.status
+                    };
+                });
+            })
+            .catch(() => requests[uid]['status'] = 'failed');
     };
 
     window.twist.getRequestResult = function(uid) {

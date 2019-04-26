@@ -102,8 +102,19 @@ class Client
 
         $settings = array_merge_recursive($settings, [
             'headers' => array_merge($this->getRequestHeaders() ?? [], ['x-csrf-token' => $this->getCsrfToken()]),
-            'xhrFields' => ['withCredentials' => true]
+            'credentials' => 'include'
         ]);
+
+        if (strtoupper($settings['method']) === 'GET' && is_array($settings['data']) && !empty($settings['url'])) {
+            $settings['url'] .= (strpos($settings['url'], '?') === false ? '?' : '').http_build_query($settings['data']);
+            unset($settings['data']);
+        }
+
+        if (strtoupper($settings['method']) === 'POST' && is_array($settings['data'])) {
+            $settings['body'] = http_build_query($settings['data']);
+            $settings['headers'] = array_merge($settings['headers'], ['Content-type' => 'application/x-www-form-urlencoded']);
+            unset($settings['data']);
+        }
 
         return $this->doRequest($settings, $timeout, $handleException)['data'] ?? [];
     }
@@ -192,6 +203,7 @@ class Client
             $this->evaluate("window.scrollTo(0,document.body.scrollHeight);");
             usleep(100000); // 100ms
             $this->requestHeaders = $this->evaluate('twist.getInterceptedHeaders()')->getReturnValue();
+            unset($this->requestHeaders['content-type']);
         } while (false === $this->requestHeaders);
     }
 
