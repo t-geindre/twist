@@ -6,13 +6,6 @@ var twist = twist || {};
     window.twist.sendRequest = function(uid, settings) {
         requests[uid] = {status: 'pending', data: null};
 
-        // if (settings.data) {
-        //     settings.body = new FormData();
-        //     Object.keys(settings.data).forEach(
-        //         key => settings.body.append(key, settings.data[key])
-        //     );
-        // }
-
         fetch(settings.url, settings)
             .then(response => {
                 response.json().then(json => {
