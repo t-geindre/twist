@@ -11,6 +11,7 @@
         }
     },
     "require": {
+        "ext-pcntl":"*",
         "symfony/dependency-injection": "^4.2",
         "symfony/config": "^4.2",
         "symfony/yaml": "^4.2",
