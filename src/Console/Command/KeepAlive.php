@@ -8,8 +8,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Process\Exception\LogicException;
-use Symfony\Component\Process\Exception\ProcessSignaledException;
 use Symfony\Component\Process\Process;
 
 class KeepAlive extends Command
@@ -35,7 +33,6 @@ class KeepAlive extends Command
     {
         $this->addArgument('cmd', InputArgument::REQUIRED, 'Command to keep alive');
         $this->addOption('kill-delay', 'd', InputOption::VALUE_OPTIONAL, 'Delay (seconds) after which given command will be killed', 0);
-        $this->addOption('kill-signal', 's', InputOption::VALUE_OPTIONAL, 'Signal used to kill given command', SIGINT);
         $this->setDescription('Keep the given command alive, if it stops it is restarted');
     }
 
@@ -47,11 +44,10 @@ class KeepAlive extends Command
 
         $command = $input->getArgument('cmd');
         $killDelay = (int) $input->getOption('kill-delay');
-        $killSignal = (int) $input->getOption('kill-signal');
 
         while(!$this->shutdownRequested) {
             $this->message('Starting process');
-            $this->process = new Process($command);
+            $this->process = new Process($command, null, null, null, null);
 
             $this->process->start(function ($type, $buffer) use ($output) {
                 $output->write($buffer);
@@ -67,8 +63,8 @@ class KeepAlive extends Command
                 usleep(100000); // 100 ms
                 $killDelayLeft -= 100000;
                 if ($killDelayLeft <= 0 && $this->process->isRunning()) {
-                    $this->message(sprintf('Kill delay reached, sending kill signal (%d)', $killSignal));
-                    $this->sendSignal($killSignal);
+                    $this->message('Kill delay reached, stopping process');
+                    $this->process->stop();
                     break;
                 }
             }
@@ -82,33 +78,20 @@ class KeepAlive extends Command
         $this->io->block($message, 'KEEP-ALIVE', 'fg=black;bg=yellow');
     }
 
-    private function sendSignal(int $signal): void
-    {
-        if (null !== $this->process && $this->process->isRunning()) {
-            try {
-                $this->process->signal($signal);
-            } catch (LogicException $e) {}
-        }
-    }
-
     private function waitProcess(): void
     {
         if (null !== $this->process && $this->process->isRunning()) {
-            try {
-                $this->process->wait();
-            } catch (ProcessSignaledException $e) {
+            while ($this->process->isRunning()) {
+                usleep(100000); // 100 ms
             }
         }
 
         $this->message('Process stopped');
     }
 
-    public function handleSignal($signal)
+    public function handleSignal()
     {
+        $this->process->stop();
         $this->shutdownRequested = true;
-
-        if (null !== $this->process && $this->process->isRunning()) {
-            $this->process->signal($signal);
-        }
     }
 }
