@@ -241,7 +241,7 @@ class Client
 
     protected function assertNotLocked()
     {
-        if (strpos($this->page->getCurrentUrl(), slef::LOCKED_URL) === 0) {
+        if (strpos($this->page->getCurrentUrl(), self::LOCKED_URL) === 0) {
             // account locked
         }
     }

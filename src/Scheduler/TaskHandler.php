@@ -20,7 +20,10 @@ class TaskHandler
     public function run(): void
     {
         $this->task->run();
+    }
 
+    public function reset()
+    {
         $this->remainingPause = $this->task->getPauseDuration();
     }
 

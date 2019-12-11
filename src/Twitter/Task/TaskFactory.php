@@ -48,7 +48,8 @@ class TaskFactory
             $config['name'],
             $this->stepFactory->createMultiple($config['steps']),
             (int) ($config['pause'] ?? 0),
-            (int) ($config['start_delay'] ?? 0)
+            (int) ($config['start_delay'] ?? 0),
+            (bool) ($config['login_required'] ?? true)
         );
     }
 }

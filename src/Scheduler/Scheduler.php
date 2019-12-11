@@ -30,14 +30,24 @@ class Scheduler
         $this->tasks[] = new TaskHandler($task);
     }
 
-    public function run()
+    public function getTaskCount(): int
+    {
+        return count($this->tasks);
+    }
+
+    public function run(bool $once = false)
     {
         if (count($this->tasks) === 0) {
             throw new \RuntimeException('There is no task to run');
         }
 
         while (true) {
-            $this->doRun();
+            $this->doRun(!$once);
+
+            if ($once) {
+                break;
+            }
+
             $this->pause();
         }
     }
@@ -68,10 +78,10 @@ class Scheduler
         }
     }
 
-    protected function doRun()
+    protected function doRun(bool $wait = true)
     {
         foreach ($this->tasks as $task) {
-            if ($task->getRemainingPause() === 0) {
+            if (!$wait || $task->getRemainingPause() === 0) {
                 try {
                     $task->run();
                 } catch (\Throwable $e) {
@@ -79,8 +89,13 @@ class Scheduler
                         throw $e;
                     }
 
+                    $this->taskFollower->ends();
                     $this->logger->error($e->getMessage());
-                    $this->logger->warning('Task stopped, next run scheduled');
+                    if ($wait) {
+                        $this->logger->warning('Task stopped, next run scheduled');
+                    }
+                } finally {
+                    $task->reset();
                 }
             }
         }

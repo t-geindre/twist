@@ -27,19 +27,19 @@ class Display implements ActionInterface
 
     public function execute(array $tweet): ?array
     {
-        $tweet['user'] = $this->userDisplay->execute($tweet['user']);
+        $tweet['user'] = $this->userDisplay->execute($tweet['user'] ?? []);
 
         $this->taskFollower->hide();
 
-        $this->io->block(html_entity_decode($tweet['full_text'] ?? $tweet['text']));
+        $this->io->block(html_entity_decode($tweet['full_text'] ?? $tweet['text'] ?? ''));
         $this->io->block(
             sprintf(
                 '%s retweets - %s favorites - %s',
-                $tweet['retweet_count'],
-                $tweet['favorite_count'],
-                (new \DateTime($tweet['created_at']))
+                $tweet['retweet_count'] ?? '?',
+                $tweet['favorite_count'] ?? '?',
+                $tweet['created_at'] ?? false ? (new \DateTime($tweet['created_at'] ))
                     ->setTimezone(new \DateTimeZone('Europe/Paris'))
-                    ->format('d/m/Y H:i:s')
+                    ->format('d/m/Y H:i:s'): ''
             ),
             null,
             'bg=blue;fg=white'

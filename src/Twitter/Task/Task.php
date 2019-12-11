@@ -34,6 +34,9 @@ class Task implements TaskInterface
     /** @var EntityManager */
     private $em;
 
+    /** @var bool */
+    private $loginRequired;
+
     public function __construct(
         TaskFollowerInterface $taskFollower,
         SourceInterface $source,
@@ -41,7 +44,8 @@ class Task implements TaskInterface
         string $name,
         array $steps,
         int $pauseDuration,
-        int $startDelay = 0
+        int $startDelay = 0,
+        bool $loginRequired = true
     ) {
         $this->source = $source;
         $this->steps = $steps;
@@ -50,6 +54,12 @@ class Task implements TaskInterface
         $this->taskFollower = $taskFollower;
         $this->name = $name;
         $this->em = $em;
+        $this->loginRequired = $loginRequired;
+    }
+
+    public function isLoginRequired(): bool
+    {
+        return $this->loginRequired;
     }
 
     public function getName(): string

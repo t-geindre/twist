@@ -3,6 +3,7 @@
 namespace Twist\Twitter\Task\Step\Condition;
 
 use Twist\Twitter\Task\ConfigurableInterface;
+use Twist\Twitter\Task\FieldResolverTrait;
 
 class FieldMatch implements ConditionInterface, ConfigurableInterface
 {

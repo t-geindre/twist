@@ -36,7 +36,7 @@ services:
 
     Twist\Twitter\Task\Step\:
         resource: '../src/Twitter/Task/Step/*'
-        exclude:  '../src/Twitter/Task/Step/{StepFactory.php,Action/ConditionalAction.php}'
+        exclude:  '../src/Twitter/Task/Step/{StepFactory.php,Action/ConditionalAction.php,Condition/Scoring/ScoredCondition.php}'
         shared: false
         public: true
 

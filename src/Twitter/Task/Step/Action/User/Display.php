@@ -25,12 +25,9 @@ class Display implements ActionInterface
         $this->taskFollower->hide();
 
         $this->io->block(
-            sprintf(
-                '%s @%s - %s followers',
-                $user['name'],
-                $user['screen_name'],
-                $user['followers_count']
-            ),
+            ($user['name'] ?? false ? $user['name'].' ' : '').
+            ($user['screen_name'] ?? false ? '@'.$user['screen_name'].' ' : '').
+            ($user['followers_count'] ?? false ? '- '.$user['followers_count'].' ' : ''),
             null,
             'bg=green;fg=white;options=bold'
         );
