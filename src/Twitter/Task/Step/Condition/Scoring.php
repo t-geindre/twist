@@ -22,6 +22,7 @@ class Scoring implements ConditionInterface, ConfigurableInterface, ResetableInt
 
     /** @var SymfonyStyle */
     private $io;
+    
     /** @var TaskFollower */
     private $taskFollower;
 

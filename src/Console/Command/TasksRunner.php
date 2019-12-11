@@ -89,7 +89,7 @@ class TasksRunner extends Command
         $loginRequired = false;
 
         foreach ($this->config->get('tasks', []) as $taskName => $taskConfig) {
-            if (!empty($tasks) && !in_array($taskName, $tasks)){
+            if (!empty($tasks) && !in_array($taskName, $tasks)) {
                 continue;
             }
 

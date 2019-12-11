@@ -37,7 +37,7 @@ class Display implements ActionInterface
                 '%s retweets - %s favorites - %s',
                 $tweet['retweet_count'] ?? '?',
                 $tweet['favorite_count'] ?? '?',
-                $tweet['created_at'] ?? false ? (new \DateTime($tweet['created_at'] ))
+                $tweet['created_at'] ?? false ? (new \DateTime($tweet['created_at']))
                     ->setTimezone(new \DateTimeZone('Europe/Paris'))
                     ->format('d/m/Y H:i:s'): ''
             ),

@@ -47,7 +47,7 @@ class CsvImport implements SourceInterface, ConfigurableInterface
             }
 
             $finalLine = [];
-            foreach(array_combine($this->headers, $line) as $field => $value) {
+            foreach (array_combine($this->headers, $line) as $field => $value) {
                 $finalLine = $this->reverseField($field, $value, $finalLine);
             };
 
